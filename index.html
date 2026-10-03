@@ -1,41 +1,680 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>...</title>
-    <style>
-        @import url('https://googleapis.com');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #000; color: #ff3333; font-family: 'Press Start 2P', monospace; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
-        #start-trigger { position: absolute; bottom: 80px; font-size: 24px; cursor: pointer; letter-spacing: 5px; text-shadow: 0 0 10px #ff0000; animation: pulse 1s infinite alternate; }
-        #intro-text { font-size: 14px; line-height: 2; text-align: center; max-width: 80%; display: none; text-shadow: 2px 2px 0px #000; }
-        @keyframes pulse { from { opacity: 0.4; transform: scale(0.95); } to { opacity: 1; transform: scale(1.05); } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>...</title>
+
+<!-- ===== ЗАЩИТА ОТ ПРОСМОТРА (визуально) ===== -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    height: 100%;
+    background: #000;
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    overflow: hidden;
+    cursor: default;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    position: relative;
+}
+
+body::before {
+    content: " ";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,.25) 50%),
+        linear-gradient(90deg, rgba(255,0,0,.06), rgba(0,255,0,.02), rgba(0,0,255,.06));
+    background-size: 100% 3px, 6px 100%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+#dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    cursor: pointer;
+    letter-spacing: 10px;
+    color: #e6c617;
+    text-shadow: 0 0 15px #f00, 0 0 30px #800;
+    animation: pulse 1s infinite alternate;
+    z-index: 100;
+}
+@keyframes pulse { from { opacity: .35; } to { opacity: 1; } }
+
+#sp {
+    position: absolute;
+    bottom: 250px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 550px;
+    height: 680px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    display: none;
+    z-index: 4;
+    image-rendering: pixelated;
+    pointer-events: none;
+    -webkit-user-drag: none;
+}
+
+#name {
+    position: absolute;
+    top: -32px;
+    left: 25px;
+    background: #1a0505;
+    border: 3px double #800;
+    padding: 6px 20px;
+    font-size: 13px;
+    color: #f33;
+    text-shadow: 2px 2px 0 #000;
+    z-index: 6;
+}
+
+#box {
+    width: 94%;
+    max-width: 1100px;
+    height: 250px;
+    background: rgba(10, 2, 2, .98);
+    border: 4px double #800;
+    padding: 35px 50px;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    box-shadow: 0 -10px 30px rgba(0,0,0,.9);
+    z-index: 5;
+    position: relative;
+    cursor: pointer;
+}
+
+#text {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #e6c617;
+    height: 100%;
+    overflow-y: auto;
+    text-shadow: 2px 2px 0 #000;
+    padding-top: 10px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+#hint {
+    position: absolute;
+    bottom: 12px;
+    right: 24px;
+    font-size: 11px;
+    color: #f33;
+    opacity: 0;
+    transition: opacity .3s;
+    pointer-events: none;
+    text-shadow: 0 0 6px #800;
+}
+#hint.on {
+    opacity: 1;
+    animation: blinkHint 1s infinite alternate;
+}
+@keyframes blinkHint { from { opacity: .3; } to { opacity: 1; } }
+
+#ch-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 13px;
+    color: #f33;
+    background: 0 0;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    text-shadow: 1px 1px 2px #000;
+    line-height: 1.5;
+    padding: 4px 0;
+}
+.btn:hover { color: #fff; text-shadow: 0 0 8px #f00; }
+
+#cipher {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 64px;
+    color: #4a0000;
+    letter-spacing: 12px;
+    z-index: 300;
+    display: none;
+    white-space: nowrap;
+    font-family: 'Press Start 2P', monospace;
+    text-align: center;
+    opacity: 0.18;
+}
+#cipher.show {
+    display: block;
+}
+
+/* ====== ЗАЩИТА: чёрный экран при попытке открыть DevTools ====== */
+#devtoolsGuard {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    color: #f33;
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    text-align: center;
+    padding: 40px;
+    letter-spacing: 2px;
+}
+#devtoolsGuard.on { display: flex; }
+</style>
 </head>
-<!-- Блокируем контекстное меню (правую кнопку мыши) -->
-<body oncontextmenu="return false;">
+<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
 
-    <div id="start-trigger" onclick="startIntro()">...</div>
-    <div id="intro-text"></div>
+<div id="dot">...</div>
 
-    <audio id="snd-breeze" src="sounds/light-breeze.mp3" loop></audio>
-    <audio id="snd-click" src="sounds/page-flip-sound.mp3" preload="auto"></audio>
-    <audio id="snd-steps" src="sounds/steps-2.mp3" preload="auto"></audio>
-    <audio id="snd-door" src="https://mixkit.co" preload="auto"></audio>
+<div id="sp"></div>
 
-    <script>
-        // Блокировка F12, Ctrl+U, Ctrl+Shift+I и обходных путей хакеров
-        document.addEventListener('keydown', function(e) {
-            if (e.keyCode == 123 || 
-                (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || 
-                (e.ctrlKey && e.keyCode == 85)) {
-                e.preventDefault();
-                return false;
-            }
+<div id="box">
+    <div id="name">Незнакомец</div>
+    <div id="text"></div>
+    <div id="ch-box"></div>
+    <div id="hint">▼ нажми, чтобы продолжить</div>
+</div>
+
+<div id="cipher">-174, 62, -36</div>
+
+<div id="devtoolsGuard">не надо сюда смотреть</div>
+
+<audio id="br"  src="sounds/light-breeze.mp3" loop preload="auto"></audio>
+<audio id="cl"  src="sounds/pencil-scratching-on-paper.mp3" preload="auto"></audio>
+<audio id="st"  src="sounds/steps-2.mp3" preload="auto"></audio>
+<audio id="sf"  src="sounds/fakel--dokumentalnyiy.mp3" preload="auto"></audio>
+<audio id="sc"  src="sounds/yantarnyie-slzyi--ognennyiy-plach.mp3" loop preload="auto"></audio>
+
+<script>
+"use strict";
+
+/* ============================================================
+   ЗАЩИТА ОТ ПРОСМОТРА
+   ============================================================ */
+
+// 1. Блокировка правого клика
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// 2. Блокировка выделения
+document.addEventListener('selectstart', e => e.preventDefault());
+
+// 3. Блокировка перетаскивания (картинок и т.д.)
+document.addEventListener('dragstart', e => e.preventDefault());
+
+// 4. Блокировка горячих клавиш DevTools / сохранения / просмотра кода
+document.addEventListener('keydown', e => {
+    const k = (e.key || "").toLowerCase();
+
+    // F12
+    if (e.key === "F12") { e.preventDefault(); return false; }
+
+    // Ctrl+Shift+I / J / C / K
+    if (e.ctrlKey && e.shiftKey && ["i","j","c","k"].includes(k)) {
+        e.preventDefault(); return false;
+    }
+
+    // Ctrl+U (просмотр кода)
+    if (e.ctrlKey && k === "u") { e.preventDefault(); return false; }
+
+    // Ctrl+S (сохранить)
+    if (e.ctrlKey && k === "s") { e.preventDefault(); return false; }
+
+    // Ctrl+A (выделить всё)
+    if (e.ctrlKey && k === "a") { e.preventDefault(); return false; }
+
+    // Cmd+Opt+I/J/C на Mac
+    if (e.metaKey && e.altKey && ["i","j","c"].includes(k)) {
+        e.preventDefault(); return false;
+    }
+
+    // Cmd+U / Cmd+S на Mac
+    if (e.metaKey && (k === "u" || k === "s")) {
+        e.preventDefault(); return false;
+    }
+}, true);
+
+// 5. Детект открытия DevTools по размеру окна
+const guard = document.getElementById('devtoolsGuard');
+const threshold = 160;
+let devOpen = false;
+
+function checkDevTools() {
+    const wDiff = window.outerWidth - window.innerWidth;
+    const hDiff = window.outerHeight - window.innerHeight;
+    const suspicious = (wDiff > threshold) || (hDiff > threshold);
+
+    if (suspicious && !devOpen) {
+        devOpen = true;
+        guard.classList.add('on');
+        // Тихо останавливаем всю игру
+        try { document.querySelectorAll('audio').forEach(a => a.pause()); } catch(e) {}
+    } else if (!suspicious && devOpen) {
+        devOpen = false;
+        guard.classList.remove('on');
+    }
+}
+setInterval(checkDevTools, 800);
+
+/* ============================================================
+   ИГРА
+   ============================================================ */
+const box   = document.getElementById('box');
+const nm    = document.getElementById('name');
+const tx    = document.getElementById('text');
+const chB   = document.getElementById('ch-box');
+const hint  = document.getElementById('hint');
+const sp    = document.getElementById('sp');
+const cipherEl = document.getElementById('cipher');
+
+const br  = document.getElementById('br');
+const cl  = document.getElementById('cl');
+const st  = document.getElementById('st');
+const sf  = document.getElementById('sf');
+const sc  = document.getElementById('sc');
+
+br.volume  = 0.30;
+cl.volume  = 0.45;
+st.volume  = 0.60;
+sf.volume  = 0.70;
+sc.volume  = 0.40;
+
+let timer       = null;
+let isPrinting  = false;
+let curE        = 'f1';
+let finalDone   = false;
+let pencilTimer = null;
+
+let waitingFor  = null;
+let nextAction  = null;
+
+function setE(e) {
+    curE = e;
+    sp.style.backgroundImage = `url('foto/${e}.png')`;
+}
+
+function pencilTick() {
+    try {
+        cl.currentTime = 0;
+        const p = cl.play();
+        if (p && p.catch) p.catch(() => {});
+    } catch (e) {}
+
+    if (pencilTimer) clearTimeout(pencilTimer);
+    pencilTimer = setTimeout(() => {
+        try { cl.pause(); cl.currentTime = 0; } catch (e) {}
+    }, 300);
+}
+
+const PRINT_SPEED = 55;
+
+function talk(speaker, text, initE, midIdx, midE, onDone) {
+    if (finalDone) return;
+
+    if (timer) clearInterval(timer);
+    isPrinting = true;
+
+    chB.innerHTML = "";
+    tx.innerHTML = "";
+    nm.innerText = speaker;
+
+    tx.style.color = (speaker === "Вы") ? "#ffffff" : "#e6c617";
+
+    if (speaker === "Незнакомец" && initE) setE(initE);
+    else sp.style.backgroundImage = `url('foto/${curE}.png')`;
+
+    let idx = 0;
+
+    timer = setInterval(() => {
+        if (idx >= text.length) {
+            clearInterval(timer);
+            isPrinting = false;
+            if (onDone) onDone();
+            return;
+        }
+
+        if (speaker === "Незнакомец" &&
+            midIdx !== null && midIdx !== undefined &&
+            idx === midIdx && midE) {
+            setE(midE);
+        }
+
+        if (text.substr(idx, 4) === "<br>") {
+            tx.innerHTML += "<br>";
+            idx += 4;
+            return;
+        }
+
+        const ch = text[idx];
+        tx.innerHTML += ch;
+
+        if (speaker === "Незнакомец" && ch !== " ") pencilTick();
+
+        idx++;
+    }, PRINT_SPEED);
+}
+
+function showHint() {
+    waitingFor = "next";
+    hint.classList.add('on');
+}
+function hideHint() {
+    hint.classList.remove('on');
+}
+
+box.addEventListener('click', () => {
+    if (waitingFor === "next") {
+        waitingFor = null;
+        hideHint();
+        const fn = nextAction;
+        nextAction = null;
+        if (fn) fn();
+    }
+});
+
+function showChoices(list) {
+    waitingFor = "choices";
+    hideHint();
+    chB.innerHTML = "";
+    list.forEach((c, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.innerHTML = `${i + 1}. ${c.t}`;
+        btn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            waitingFor = null;
+            chB.innerHTML = "";
+            c.a();
         });
+        chB.appendChild(btn);
+    });
+}
 
-        // Зашифрованная логика твоего интро (Хакеры не разберут переменные)
-        const _0x5a1b=["\x73\x74\x61\x72\x74\x2D\x74\x72\x69\x67\x67\x65\x72","\x67\x65\x74\x45\x6C\x65\x6D\x65\x6E\x74\x42\x79\x49\x64","\x69\x6E\x74\x72\x6F\x2D\x74\x65\x78\x74","\x73\x6E\x64\x2D\x62\x72\x65\x65\x7A\x65","\x73\x6E\x64\x2D\x63\x6C\x69\x63\x6B","\x73\x6E\x64\x2D\x73\x74\x65\x70\x73","\x73\x6E\x64\x2D\x64\x6F\x6F\x72","\x6E\x6F\x6E\x65","\x73\x74\x79\x6C\x65","\x64\x69\x73\x70\x6C\x61\x79","\x62\x6C\x6F\x63\x6B","\x70\x6C\x61\x79","\x63\x61\x74\x63\x68","\x2E\x2E\x2E\x20\x20\x20\x20\x20\x20\x30\x33\x2E\x31\x30\x2E\x32\x36","\x69\x6E\x6E\x65\x72\x48\x54\x4D\x4C","\x63\x75\x72\x72\x65\x6E\x74\x54\x69\x6D\x65"];const tr=document[_0x5a1b[1]](_0x5a1b[0]),tx=document[_0x5a1b[1]](_0x5a1b[2]),br=document[_0x5a1b[1]](_0x5a1b[3]),cl=document[_0x5a1b[1]](_0x5a1b[4]),st=document[_0x5a1b[1]](_0x5a1b[5]),dr=document[_0x5a1b[1]](_0x5a1b[6]);br.volume=0.5;cl.volume=0.3;st.volume=0.7;dr.volume=0.6;const tTxt=_0x5a1b[13];let idx=0;function startIntro(){tr[_0x5a1b[8]][_0x5a1b[9]]=_0x5a1b[7];tx[_0x5a1b[8]][_0x5a1b[9]]=_0x5a1b[10];br[_0x5a1b[11]]()[_0x5a1b[12]](()=> {});prnt();}function prnt(){if(idx<tTxt.length){tx[_0x5a1b[14]]+=tTxt[idx];if(tTxt[idx]!==" "){cl[_0x5a1b[15]]=0;cl[_0x5a1b[11]]()[_0x5a1b[12]](()=> {})}idx++;setTimeout(prnt,250)}else{setTimeout(()=>{st[_0x5a1b[11]]()[_0x5a1b[12]](()=> {})},600)}}st.onended=function(){dr[_0x5a1b[11]]()[_0x5a1b[12]](()=> {})};
-    </script>
+function sayNpc(text, initE, midIdx, midE, onNext) {
+    talk("Незнакомец", text, initE, midIdx, midE, () => {
+        nextAction = () => onNext();
+        showHint();
+    });
+}
+function sayPlayer(text, onNext) {
+    talk("Вы", text, null, null, null, () => {
+        nextAction = () => onNext();
+        showHint();
+    });
+}
+
+/* ---------- СЦЕНАРИЙ ---------- */
+function NODE_START() {
+    sayNpc(
+        "Я уж и не думал, что сюда кто-то придёт. Значит, всё-таки нашли записку. Не зря я изредка проверяю эту пещеру.",
+        "f1", 65, "f5",
+        () => {
+            sayPlayer("Кто ты?", () => {
+                sayNpc(
+                    "Один из выживших из деревни, которая пала от голода. Я должен быть рад тому, что пока ещё жив.",
+                    "f1", 55, "f3",
+                    () => CHOICE_1()
+                );
+            });
+        }
+    );
+}
+
+function CHOICE_1() {
+    showChoices([
+        { t: "Я ничего не знаю о деревне.", a: NODE_1_A },
+        { t: "Я слегка знаю эту историю.", a: NODE_1_B }
+    ]);
+}
+
+function NODE_1_A() {
+    sayPlayer("Я ничего не знаю о деревне.", () => {
+        sayNpc(
+            "Ты не знаешь о деревне? Я думал, слухи о ней разошлись уже давно. Хотя, вряд ли этот миф сейчас жив, зная, что книги в основном сжигали жители.",
+            "f5", 100, "f1",
+            () => {
+                sayPlayer("Разве есть кто-то, кто выжил?", () => {
+                    sayNpc(
+                        "Как видишь, я стою перед тобой. Многие мигрировали в другие поселения.",
+                        "f6", null, null,
+                        () => CHOICE_2()
+                    );
+                });
+            }
+        );
+    });
+}
+
+function NODE_1_B() {
+    sayPlayer("Я слегка знаю эту историю.", () => {
+        sayNpc(
+            "Значит, все же беженцы часто говорили насчёт этого инцидента.",
+            "f2", null, null,
+            () => {
+                sayPlayer("Разве есть кто-то, кто выжил?", () => {
+                    sayNpc(
+                        "Как видишь, я стою перед тобой. Многие мигрировали в другие поселения.",
+                        "f6", null, null,
+                        () => CHOICE_2()
+                    );
+                });
+            }
+        );
+    });
+}
+
+function CHOICE_2() {
+    sayNpc(
+        "Ты пришёл сюда зачем-то конкретным?",
+        "f1", null, null,
+        () => {
+            showChoices([
+                { t: "Зачем ты оставляешь книги?", a: NODE_2_A },
+                { t: "Говорят, у вас был храм...", a: NODE_2_B }
+            ]);
+        }
+    );
+}
+
+function NODE_2_A() {
+    sayPlayer("Зачем ты оставляешь книги?", () => {
+        DIALOGUE_BOOKS();
+    });
+}
+
+function NODE_2_B() {
+    sayPlayer("Говорят, у вас был храм, в который люди часто ходили. Что у вас происходило?", () => {
+        sayNpc(
+            "...Там было трое бессердечных, которые, пользуясь бессилием людей, решили воспользоваться ими. Один писал сказания, двое часто мозги промывали. Зачем они всё это устроили — точно не могу сказать. Но, как я знаю, писатель был там точно не по своей воле.",
+            "f5", 180, "f1",
+            () => {
+                sayPlayer("Зачем ты оставляешь книги?", () => {
+                    DIALOGUE_BOOKS();
+                });
+            }
+        );
+    });
+}
+
+function DIALOGUE_BOOKS() {
+    sayNpc(
+        "Книги? Подожди, я оставлял лишь записку в библиотеке. Расскажи поподробнее, о каких книгах идёт речь?",
+        "f5", 40, "f3",
+        () => {
+            sayPlayer("В них довольно странное содержание, и половину текста не видно.", () => {
+                sayNpc(
+                    "Хммм... Странно. Честно, не могу предположить, откуда они.",
+                    "f1", null, null,
+                    () => CHOICE_3()
+                );
+            });
+        }
+    );
+}
+
+function CHOICE_3() {
+    sayNpc(
+        "Подожди... А где ты нашёл записку?",
+        "f1", 50, "f5",
+        () => {
+            showChoices([
+                { t: "В книге.", a: NODE_3_A },
+                { t: "Просто на столе лежала.", a: NODE_3_B }
+            ]);
+        }
+    );
+}
+
+function NODE_3_A() {
+    sayPlayer("В книге.", () => {
+        sayNpc(
+            "В книге?..",
+            "f1", null, null,
+            () => farewellScene()
+        );
+    });
+}
+
+function NODE_3_B() {
+    sayPlayer("Просто на столе лежала.", () => {
+        sayNpc(
+            "На столе? Библиотека давно заброшена, вход в неё обвалился. Если записка была на столе, значит, её положили туда недавно.",
+            "f1", 140, "f5",
+            () => {
+                sayNpc(
+                    "Ты уверен, что ты пришёл один?",
+                    "f5", null, null,
+                    () => {
+                        sayPlayer("...", () => {
+                            farewellScene();
+                        });
+                    }
+                );
+            }
+        );
+    });
+}
+
+function farewellScene() {
+    sayNpc(
+        "Что ж, мне пора идти. Может быть, мы ещё встретимся.",
+        "f3", null, null,
+        () => {
+            sp.style.display = "none";
+
+            st.loop = false;
+            try { st.currentTime = 0; st.play().catch(() => {}); } catch (e) {}
+
+            nextAction = () => {
+                talk(
+                    "Вы",
+                    "Живы ли ещё те трое? Если по слухам почти все жители мертвы... либо слухи неверные, либо он лжёт.",
+                    null, null, null,
+                    () => {
+                        nextAction = () => triggerEnding();
+                        showHint();
+                    }
+                );
+            };
+            showHint();
+        }
+    );
+}
+
+function triggerEnding() {
+    if (finalDone) return;
+    finalDone = true;
+
+    chB.innerHTML = "";
+    hideHint();
+    waitingFor = null;
+
+    sp.style.display  = "none";
+    box.style.display = "none";
+
+    try { br.pause();  br.currentTime  = 0; } catch (e) {}
+    try { st.pause();  st.currentTime  = 0; } catch (e) {}
+    try { sc.pause();  sc.currentTime  = 0; } catch (e) {}
+    try { cl.pause();  cl.currentTime  = 0; } catch (e) {}
+
+    cipherEl.classList.add('show');
+}
+
+function start() {
+    document.getElementById('dot').style.display = 'none';
+
+    try { sf.currentTime = 0; sf.play().catch(() => {}); } catch (e) {}
+
+    setTimeout(() => {
+        try { sf.pause(); sf.currentTime = 0; } catch (e) {}
+
+        st.loop = false;
+        try { st.currentTime = 0; st.play().catch(() => {}); } catch (e) {}
+
+        const beginScene = () => {
+            try { sc.currentTime = 0; sc.play().catch(() => {}); } catch (e) {}
+            try { br.currentTime = 0; br.play().catch(() => {}); } catch (e) {}
+
+            box.style.display = 'flex';
+            sp.style.display  = 'block';
+            setE('f1');
+
+            NODE_START();
+        };
+
+        st.onended = () => {
+            st.onended = null;
+            beginScene();
+        };
+
+        setTimeout(() => {
+            if (sp.style.display !== 'block') {
+                st.onended = null;
+                beginScene();
+            }
+        }, 4000);
+
+    }, 300);
+}
+
+/* ============================================================
+   ПРИВЯЗКА СТАРТА (вместо onclick в HTML — чтобы не палить в разметке)
+   ============================================================ */
+document.getElementById('dot').addEventListener('click', start);
+</script>
 </body>
 </html>
