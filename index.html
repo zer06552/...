@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>...</title>
-
-<!-- ===== ЗАЩИТА ОТ ПРОСМОТРА (визуально) ===== -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
@@ -49,21 +47,208 @@ body::before {
     pointer-events: none;
 }
 
-#dot {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 48px;
-    cursor: pointer;
-    letter-spacing: 10px;
-    color: #e6c617;
-    text-shadow: 0 0 15px #f00, 0 0 30px #800;
-    animation: pulse 1s infinite alternate;
-    z-index: 100;
+/* ================= ЛОББИ ================= */
+#lobby {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    z-index: 500;
+    overflow: hidden;
+    padding: 40px;
 }
-@keyframes pulse { from { opacity: .35; } to { opacity: 1; } }
 
+/* Меню слева — колонка карточек */
+#menu {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    width: 320px;
+    max-width: 40vw;
+    z-index: 4;
+}
+
+/* Карточка «глава» */
+.chapterCard {
+    position: relative;
+    background: rgba(10, 2, 2, .9);
+    border: 3px double #800;
+    padding: 22px 24px;
+    cursor: pointer;
+    transition: border-color .2s, background .2s, transform .15s;
+    box-shadow: 0 0 20px rgba(0,0,0,.9);
+}
+.chapterCard:hover {
+    border-color: #f33;
+    background: rgba(30, 6, 6, .95);
+    transform: translateX(4px);
+}
+
+.chapterCard .chapterTitle {
+    font-size: 12px;
+    color: #e6c617;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.chapterCard .chapterSub {
+    font-size: 8px;
+    color: #888;
+    line-height: 1.6;
+    letter-spacing: 1px;
+}
+
+/* Заблокированная карточка (будущие главы) */
+.chapterCard.locked {
+    opacity: .35;
+    cursor: not-allowed;
+}
+.chapterCard.locked:hover {
+    transform: none;
+    border-color: #800;
+    background: rgba(10, 2, 2, .9);
+}
+
+/* Листок — полупрозрачный */
+#sheet {
+    position: absolute;
+    bottom: 6%;
+    right: 5%;
+    width: 120px;
+    height: 90px;
+    background: url('foto/volyaetsya.png') center/contain no-repeat;
+    cursor: pointer;
+    z-index: 5;
+    image-rendering: pixelated;
+    transform: rotate(-10deg);
+    opacity: 0.55;
+    transition: transform .2s ease, opacity .2s ease, filter .2s ease;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,.9));
+}
+#sheet:hover {
+    transform: rotate(-6deg) scale(1.08);
+    opacity: 1;
+}
+
+/* ================= ОКНО ЛИСТКА ================= */
+#paperModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 600;
+    padding: 20px;
+}
+#paperModal.on { display: flex; }
+
+#paperContent {
+    position: relative;
+    display: inline-block;
+    width: 420px;
+    max-width: 92vw;
+    line-height: 0;
+    box-shadow: 0 0 40px rgba(0,0,0,.9);
+}
+
+#paperImage {
+    display: block;
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+    border-radius: 2px;
+}
+
+#paperInner {
+    position: absolute;
+    top: 8%;
+    left: 9%;
+    right: 9%;
+    bottom: 18%;
+    z-index: 1;
+    overflow-y: auto;
+    color: #1a1408;
+    font-size: 8px;
+    line-height: 1.7;
+    text-align: left;
+    padding: 4px;
+}
+
+#paperText {
+    font-size: 8px;
+    color: #1a1408;
+    line-height: 1.7;
+    margin-bottom: 10px;
+}
+
+#questionForm {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Прозрачное окно ввода — без рамки и фона */
+#questionInput {
+    background: transparent;
+    border: none;
+    color: #1a1408;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    padding: 8px;
+    min-height: 60px;
+    resize: none;
+    outline: none;
+    box-shadow: none;
+}
+#questionInput::placeholder { color: #5a4a2a; }
+#questionInput:focus {
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
+#leaveQuestionBtn {
+    position: absolute;
+    bottom: 4%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #d8cfa8;
+    background: #1a1408;
+    border: 2px solid #1a1408;
+    padding: 8px 14px;
+    text-decoration: none;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    cursor: pointer;
+    line-height: 1.4;
+}
+#leaveQuestionBtn:hover { background: #5a4a2a; color: #fff; }
+#leaveQuestionBtn:disabled { opacity: .5; cursor: not-allowed; }
+
+#paperClose {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    z-index: 3;
+    background: none;
+    border: none;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: #1a1408;
+    cursor: pointer;
+    padding: 4px 6px;
+}
+#paperClose:hover { color: #800; }
+
+/* ================= ИГРА ================= */
 #sp {
     position: absolute;
     bottom: 250px;
@@ -175,11 +360,8 @@ body::before {
     text-align: center;
     opacity: 0.18;
 }
-#cipher.show {
-    display: block;
-}
+#cipher.show { display: block; }
 
-/* ====== ЗАЩИТА: чёрный экран при попытке открыть DevTools ====== */
 #devtoolsGuard {
     position: fixed;
     inset: 0;
@@ -199,8 +381,51 @@ body::before {
 </head>
 <body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
 
-<div id="dot">...</div>
+<!-- ================= ЛОББИ ================= -->
+<div id="lobby">
+    <div id="menu">
 
+        <!-- Глава 1 -->
+        <div class="chapterCard" id="chapter1">
+            <div class="chapterTitle">Первая встреча</div>
+            <div class="chapterSub">нажмите, чтобы начать</div>
+        </div>
+
+        <!-- Заглушка -->
+        <div class="chapterCard locked" id="chapter2">
+            <div class="chapterTitle">...</div>
+        </div>
+
+        <!-- Заглушка -->
+        <div class="chapterCard locked" id="chapter3">
+            <div class="chapterTitle">...</div>
+        </div>
+
+    </div>
+
+    <div id="sheet" title="записка"></div>
+</div>
+
+<!-- ================= ОКНО ЛИСТКА ================= -->
+<div id="paperModal">
+    <div id="paperContent">
+        <img id="paperImage" src="foto/stranica.png" alt="">
+        <button id="paperClose">×</button>
+        <div id="paperInner">
+            <div id="paperText">
+                Я надеюсь, ты вернулся. Если ты читаешь эту записку, я хотел, чтобы ты знал: ты меня заинтересовал. В следующую нашу встречу я хотел бы прояснить пару моментов. Ты не останешься в долгу — можешь написать несколько вопросов. Я постараюсь ответить.
+            </div>
+
+            <form id="questionForm" action="https://formspree.io/f/xppqgpwl" method="POST">
+                <textarea name="question" id="questionInput" placeholder="Напишите ваш вопрос..." required></textarea>
+            </form>
+        </div>
+
+        <button id="leaveQuestionBtn" type="button">оставить вопросы</button>
+    </div>
+</div>
+
+<!-- ================= ИГРА ================= -->
 <div id="sp"></div>
 
 <div id="box">
@@ -226,49 +451,21 @@ body::before {
 /* ============================================================
    ЗАЩИТА ОТ ПРОСМОТРА
    ============================================================ */
-
-// 1. Блокировка правого клика
 document.addEventListener('contextmenu', e => e.preventDefault());
-
-// 2. Блокировка выделения
 document.addEventListener('selectstart', e => e.preventDefault());
-
-// 3. Блокировка перетаскивания (картинок и т.д.)
 document.addEventListener('dragstart', e => e.preventDefault());
 
-// 4. Блокировка горячих клавиш DevTools / сохранения / просмотра кода
 document.addEventListener('keydown', e => {
     const k = (e.key || "").toLowerCase();
-
-    // F12
     if (e.key === "F12") { e.preventDefault(); return false; }
-
-    // Ctrl+Shift+I / J / C / K
-    if (e.ctrlKey && e.shiftKey && ["i","j","c","k"].includes(k)) {
-        e.preventDefault(); return false;
-    }
-
-    // Ctrl+U (просмотр кода)
+    if (e.ctrlKey && e.shiftKey && ["i","j","c","k"].includes(k)) { e.preventDefault(); return false; }
     if (e.ctrlKey && k === "u") { e.preventDefault(); return false; }
-
-    // Ctrl+S (сохранить)
     if (e.ctrlKey && k === "s") { e.preventDefault(); return false; }
-
-    // Ctrl+A (выделить всё)
     if (e.ctrlKey && k === "a") { e.preventDefault(); return false; }
-
-    // Cmd+Opt+I/J/C на Mac
-    if (e.metaKey && e.altKey && ["i","j","c"].includes(k)) {
-        e.preventDefault(); return false;
-    }
-
-    // Cmd+U / Cmd+S на Mac
-    if (e.metaKey && (k === "u" || k === "s")) {
-        e.preventDefault(); return false;
-    }
+    if (e.metaKey && e.altKey && ["i","j","c"].includes(k)) { e.preventDefault(); return false; }
+    if (e.metaKey && (k === "u" || k === "s")) { e.preventDefault(); return false; }
 }, true);
 
-// 5. Детект открытия DevTools по размеру окна
 const guard = document.getElementById('devtoolsGuard');
 const threshold = 160;
 let devOpen = false;
@@ -277,11 +474,9 @@ function checkDevTools() {
     const wDiff = window.outerWidth - window.innerWidth;
     const hDiff = window.outerHeight - window.innerHeight;
     const suspicious = (wDiff > threshold) || (hDiff > threshold);
-
     if (suspicious && !devOpen) {
         devOpen = true;
         guard.classList.add('on');
-        // Тихо останавливаем всю игру
         try { document.querySelectorAll('audio').forEach(a => a.pause()); } catch(e) {}
     } else if (!suspicious && devOpen) {
         devOpen = false;
@@ -289,6 +484,68 @@ function checkDevTools() {
     }
 }
 setInterval(checkDevTools, 800);
+
+/* ============================================================
+   ЛОББИ
+   ============================================================ */
+const lobby = document.getElementById('lobby');
+const sheet = document.getElementById('sheet');
+const paperModal = document.getElementById('paperModal');
+const paperClose = document.getElementById('paperClose');
+
+const questionForm = document.getElementById('questionForm');
+const questionInput = document.getElementById('questionInput');
+const leaveQuestionBtn = document.getElementById('leaveQuestionBtn');
+
+/* Глава 1 — старт игры */
+document.getElementById('chapter1').addEventListener('click', () => {
+    lobby.style.display = 'none';
+    start();
+});
+
+/* Клик по валяющемуся листку — открываем записку */
+sheet.addEventListener('click', () => {
+    paperModal.classList.add('on');
+});
+
+/* Закрыть окно листка */
+paperClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    paperModal.classList.remove('on');
+});
+
+/* Клик по фону вне окна — закрыть */
+paperModal.addEventListener('click', (e) => {
+    if (e.target === paperModal) {
+        paperModal.classList.remove('on');
+    }
+});
+
+/* Отправка вопроса — после отправки ничего не пишется */
+leaveQuestionBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const question = questionInput.value.trim();
+    if (!question) return;
+
+    leaveQuestionBtn.disabled = true;
+
+    fetch(questionForm.action, {
+        method: 'POST',
+        body: new FormData(questionForm),
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(() => {
+        questionInput.value = "";
+    })
+    .catch(() => {
+        questionInput.value = "";
+    })
+    .finally(() => {
+        leaveQuestionBtn.disabled = false;
+    });
+});
 
 /* ============================================================
    ИГРА
@@ -634,9 +891,10 @@ function triggerEnding() {
     cipherEl.classList.add('show');
 }
 
+/* ============================================================
+   СТАРТ ИГРЫ
+   ============================================================ */
 function start() {
-    document.getElementById('dot').style.display = 'none';
-
     try { sf.currentTime = 0; sf.play().catch(() => {}); } catch (e) {}
 
     setTimeout(() => {
@@ -670,11 +928,6 @@ function start() {
 
     }, 300);
 }
-
-/* ============================================================
-   ПРИВЯЗКА СТАРТА (вместо onclick в HTML — чтобы не палить в разметке)
-   ============================================================ */
-document.getElementById('dot').addEventListener('click', start);
 </script>
 </body>
 </html>
