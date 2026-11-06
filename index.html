@@ -52,15 +52,15 @@ body::before {
     position: fixed;
     inset: 0;
     background: #000;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: flex-start;
     z-index: 500;
     overflow: hidden;
     padding: 40px;
 }
+#lobby.on { display: flex; }
 
-/* Меню слева — колонка карточек */
 #menu {
     display: flex;
     flex-direction: column;
@@ -70,7 +70,6 @@ body::before {
     z-index: 4;
 }
 
-/* Карточка «глава» */
 .chapterCard {
     position: relative;
     background: rgba(10, 2, 2, .9);
@@ -101,7 +100,6 @@ body::before {
     letter-spacing: 1px;
 }
 
-/* Заблокированная карточка (будущие главы) */
 .chapterCard.locked {
     opacity: .35;
     cursor: not-allowed;
@@ -112,7 +110,6 @@ body::before {
     background: rgba(10, 2, 2, .9);
 }
 
-/* Листок — полупрозрачный */
 #sheet {
     position: absolute;
     bottom: 6%;
@@ -191,7 +188,6 @@ body::before {
     gap: 8px;
 }
 
-/* Прозрачное окно ввода — без рамки и фона */
 #questionInput {
     background: transparent;
     border: none;
@@ -248,7 +244,7 @@ body::before {
 }
 #paperClose:hover { color: #800; }
 
-/* ================= ИГРА ================= */
+/* ================= ИГРА (глава 1) ================= */
 #sp {
     position: absolute;
     bottom: 250px;
@@ -377,6 +373,274 @@ body::before {
     letter-spacing: 2px;
 }
 #devtoolsGuard.on { display: flex; }
+
+/* ================= МИНИ-ИГРА ================= */
+#g2 {
+    position: fixed;
+    inset: 0;
+    background: #101C12;
+    display: none;
+    z-index: 700;
+    overflow: hidden;
+    font-family: 'Press Start 2P', monospace;
+}
+#g2.on { display: block; }
+
+#g2 #g2game { position: absolute; inset: 0; }
+#g2 #g2game canvas { display: block; }
+
+#g2 #fade {
+    position: fixed; inset: 0; background: #000;
+    opacity: 0; pointer-events: none; z-index: 900;
+    transition: opacity 1s ease;
+}
+#g2 #fade.on { opacity: 1; }
+
+#g2 #interactHint {
+    position: fixed; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    background: rgba(10, 2, 2, .9);
+    border: 3px double #800;
+    color: #e6c617;
+    font-size: 11px; letter-spacing: 2px;
+    z-index: 800; display: none; pointer-events: none;
+    animation: pulseHint 1s infinite alternate;
+}
+#g2 #interactHint.on { display: block; }
+@keyframes pulseHint { from { opacity: .6; } to { opacity: 1; } }
+
+#g2 #dotsScreen {
+    position: fixed; inset: 0;
+    background: #000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    cursor: pointer;
+    padding: 20px;
+}
+#g2 #dotsScreen.on { display: flex; }
+
+#g2 #dotsText {
+    font-size: 14px;
+    color: #e6c617;
+    text-align: center;
+    letter-spacing: 1px;
+    line-height: 2.2;
+    text-shadow: 2px 2px 0 #000;
+    min-height: 200px;
+    max-width: 90vw;
+    padding: 20px;
+    white-space: pre-wrap;
+}
+
+#g2 #continueText {
+    position: absolute; bottom: 60px;
+    font-size: 11px; color: #f33; letter-spacing: 2px;
+    animation: blinkHint 1s infinite alternate;
+    display: none;
+}
+
+#g2 #cutsceneDialog {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 220px;
+    background: rgba(10, 2, 2, .95);
+    border-top: 4px double #800;
+    padding: 30px 50px;
+    color: #e6c617; font-size: 16px; line-height: 1.8;
+    z-index: 950; display: none; cursor: pointer; letter-spacing: 1px;
+}
+#g2 #cutsceneDialog.on { display: block; }
+#g2 #cutsceneDialog .dialogText { color: #e6c617; font-size: 16px; text-shadow: 2px 2px 0 #000; }
+#g2 #cutsceneDialog .dialogHint {
+    position: absolute; bottom: 12px; right: 24px;
+    font-size: 10px; color: #f33;
+    animation: blinkHint 1s infinite alternate;
+}
+
+#g2 #cmotritDialog {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 220px;
+    background: rgba(10, 2, 2, .95);
+    border-top: 4px double #800;
+    padding: 30px 50px;
+    color: #e6c617; font-size: 16px; line-height: 1.8;
+    z-index: 1170; display: none; cursor: pointer; letter-spacing: 1px;
+}
+#g2 #cmotritDialog.on { display: block; }
+#g2 #cmotritDialog .dialogText { color: #e6c617; font-size: 16px; text-shadow: 2px 2px 0 #000; }
+#g2 #cmotritDialog .dialogHint {
+    position: absolute; bottom: 12px; right: 24px;
+    font-size: 10px; color: #f33;
+    animation: blinkHint 1s infinite alternate;
+}
+
+#g2 #cmotritScene, #g2 #cmotrit2Scene {
+    position: fixed; inset: 0; background: #101C12;
+    display: none; z-index: 1150; overflow: hidden;
+}
+#g2 #cmotritScene.on, #g2 #cmotrit2Scene.on { display: block; }
+
+#g2 #cmotritImage, #g2 #cmotrit2Image {
+    width: 100vw; height: 100vh;
+    object-fit: cover; object-position: center top;
+    image-rendering: pixelated; display: block;
+}
+
+#g2 #cmotritScene::after, #g2 #cmotrit2Scene::after {
+    content: ""; position: absolute; inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+    z-index: 1160;
+}
+
+#g2 #palkiScene {
+    position: fixed; inset: 0;
+    background: #101C12;
+    display: none;
+    z-index: 1120;
+    overflow: hidden;
+}
+#g2 #palkiScene.on { display: block; }
+
+#g2 #palkiCanvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+}
+
+#g2 #palkiHint {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #e6c617;
+    background: rgba(10, 2, 2, .9);
+    border: 3px double #800;
+    padding: 10px 20px;
+    z-index: 1125;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0 #000;
+}
+
+#g2 #eatDotsScreen {
+    position: fixed; inset: 0;
+    background: #000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1180;
+    cursor: pointer;
+}
+#g2 #eatDotsScreen.on { display: flex; }
+
+#g2 #eatDotsText {
+    font-size: 72px; color: #e6c617; letter-spacing: 10px;
+}
+
+#g2 #eatContinueText {
+    position: absolute; bottom: 60px;
+    font-size: 11px; color: #f33; letter-spacing: 2px;
+    animation: blinkHint 1s infinite alternate;
+}
+
+#g2 #startDotsScreen {
+    position: fixed; inset: 0;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    cursor: pointer;
+    padding: 20px;
+}
+#g2 #startDotsScreen.hidden { display: none; }
+
+#g2 .startDotsText {
+    font-size: 18px;
+    color: #e6c617;
+    text-align: center;
+    letter-spacing: 2px;
+    line-height: 1.8;
+    text-shadow: 2px 2px 0 #000;
+    min-height: 120px;
+    max-width: 90vw;
+    padding: 20px;
+    white-space: pre-wrap;
+}
+
+#g2 .startContinueText {
+    position: absolute; bottom: 60px;
+    font-size: 11px; color: #f33; letter-spacing: 2px;
+    animation: blinkHint 1s infinite alternate;
+    display: none;
+}
+
+#g2 #eatScene {
+    position: fixed; inset: 0;
+    background: #1C1E24;
+    display: none;
+    z-index: 1100;
+    overflow: hidden;
+}
+#g2 #eatScene.on { display: block; }
+
+#g2 #fonImage {
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('person/fon.png');
+    background-repeat: repeat-x;
+    background-position: center;
+    background-size: contain;
+    background-color: #1C1E24;
+    image-rendering: pixelated;
+    z-index: 5;
+    pointer-events: none;
+}
+
+#g2 #eatScene::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+    z-index: 6;
+}
+
+#g2 #eatImage {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(4);
+    max-width: 90vw;
+    max-height: 90vh;
+    image-rendering: pixelated;
+    z-index: 10;
+    pointer-events: none;
+}
+
+#g2 #eatElkiCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 7;
+    pointer-events: none;
+}
+
+#g2 #eatDarkOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 8;
+    pointer-events: none;
+}
 </style>
 </head>
 <body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
@@ -385,18 +649,16 @@ body::before {
 <div id="lobby">
     <div id="menu">
 
-        <!-- Глава 1 -->
         <div class="chapterCard" id="chapter1">
             <div class="chapterTitle">Первая встреча</div>
             <div class="chapterSub">нажмите, чтобы начать</div>
         </div>
 
-        <!-- Заглушка -->
-        <div class="chapterCard locked" id="chapter2">
-            <div class="chapterTitle">...</div>
+        <div class="chapterCard" id="chapter2">
+            <div class="chapterTitle">Мини-игра</div>
+            <div class="chapterSub">нажмите, чтобы начать</div>
         </div>
 
-        <!-- Заглушка -->
         <div class="chapterCard locked" id="chapter3">
             <div class="chapterTitle">...</div>
         </div>
@@ -425,7 +687,7 @@ body::before {
     </div>
 </div>
 
-<!-- ================= ИГРА ================= -->
+<!-- ================= ИГРА ГЛАВА 1 ================= -->
 <div id="sp"></div>
 
 <div id="box">
@@ -437,8 +699,69 @@ body::before {
 
 <div id="cipher">-174, 62, -36</div>
 
+<!-- ================= МИНИ-ИГРА ================= -->
+<div id="g2">
+    <div id="g2game"><canvas id="canvas"></canvas></div>
+    <div id="fade"></div>
+
+    <div id="startDotsScreen">
+        <div class="startDotsText" id="startText"></div>
+        <div class="startContinueText" id="startContinue">нажмите, чтобы продолжить</div>
+    </div>
+
+    <div id="interactHint">[E] — взаимодействовать</div>
+
+    <div id="dotsScreen">
+        <div id="dotsText"></div>
+        <div id="continueText">нажмите, чтобы продолжить</div>
+    </div>
+
+    <div id="cutsceneDialog">
+        <div class="dialogText"></div>
+        <div class="dialogHint">нажмите, чтобы продолжить</div>
+    </div>
+
+    <div id="cmotritDialog">
+        <div class="dialogText"></div>
+        <div class="dialogHint">нажмите, чтобы продолжить</div>
+    </div>
+
+    <div id="cmotritScene">
+        <img id="cmotritImage" src="person/cmotrit.png" alt="">
+    </div>
+
+    <div id="cmotrit2Scene">
+        <img id="cmotrit2Image" src="person/cmotrit2.png" alt="">
+    </div>
+
+    <div id="palkiScene">
+        <canvas id="palkiCanvas"></canvas>
+        <div id="palkiHint">Собрано: <span id="palkiCount">0</span> / 5</div>
+    </div>
+
+    <div id="eatDotsScreen">
+        <div id="eatDotsText">...</div>
+        <div id="eatContinueText">нажмите, чтобы продолжить</div>
+    </div>
+
+    <div id="eatScene">
+        <div id="fonImage"></div>
+        <canvas id="eatElkiCanvas"></canvas>
+        <img id="eatImage" alt="">
+        <div id="eatDarkOverlay"></div>
+    </div>
+
+    <audio id="hum" src="sounds/alarm-hum.mp3" loop preload="auto"></audio>
+    <audio id="amb"  src="sounds/nocturnal-forest-amb.mp3" loop preload="auto"></audio>
+    <audio id="fire" src="sounds/crackling-fire-fireplace.mp3" loop preload="auto"></audio>
+    <audio id="step" src="sounds/steps-on-the-grass.mp3" preload="auto"></audio>
+    <audio id="meat" src="sounds/zvuk-myasa.mp3" preload="auto"></audio>
+    <audio id="lomaet" src="sounds/lomaet.mp3" preload="auto"></audio>
+</div>
+
 <div id="devtoolsGuard">не надо сюда смотреть</div>
 
+<!-- Глава 1 аудио -->
 <audio id="br"  src="sounds/light-breeze.mp3" loop preload="auto"></audio>
 <audio id="cl"  src="sounds/pencil-scratching-on-paper.mp3" preload="auto"></audio>
 <audio id="st"  src="sounds/steps-2.mp3" preload="auto"></audio>
@@ -497,31 +820,31 @@ const questionForm = document.getElementById('questionForm');
 const questionInput = document.getElementById('questionInput');
 const leaveQuestionBtn = document.getElementById('leaveQuestionBtn');
 
-/* Глава 1 — старт игры */
 document.getElementById('chapter1').addEventListener('click', () => {
-    lobby.style.display = 'none';
-    start();
+    lobby.classList.remove('on');
+    startChapter1();
 });
 
-/* Клик по валяющемуся листку — открываем записку */
+document.getElementById('chapter2').addEventListener('click', () => {
+    lobby.classList.remove('on');
+    startChapter2();
+});
+
 sheet.addEventListener('click', () => {
     paperModal.classList.add('on');
 });
 
-/* Закрыть окно листка */
 paperClose.addEventListener('click', (e) => {
     e.stopPropagation();
     paperModal.classList.remove('on');
 });
 
-/* Клик по фону вне окна — закрыть */
 paperModal.addEventListener('click', (e) => {
     if (e.target === paperModal) {
         paperModal.classList.remove('on');
     }
 });
 
-/* Отправка вопроса — после отправки ничего не пишется */
 leaveQuestionBtn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -536,19 +859,13 @@ leaveQuestionBtn.addEventListener('click', (e) => {
         body: new FormData(questionForm),
         headers: { 'Accept': 'application/json' }
     })
-    .then(() => {
-        questionInput.value = "";
-    })
-    .catch(() => {
-        questionInput.value = "";
-    })
-    .finally(() => {
-        leaveQuestionBtn.disabled = false;
-    });
+    .then(() => { questionInput.value = ""; })
+    .catch(() => { questionInput.value = ""; })
+    .finally(() => { leaveQuestionBtn.disabled = false; });
 });
 
 /* ============================================================
-   ИГРА
+   ГЛАВА 1
    ============================================================ */
 const box   = document.getElementById('box');
 const nm    = document.getElementById('name');
@@ -694,7 +1011,6 @@ function sayPlayer(text, onNext) {
     });
 }
 
-/* ---------- СЦЕНАРИЙ ---------- */
 function NODE_START() {
     sayNpc(
         "Я уж и не думал, что сюда кто-то придёт. Значит, всё-таки нашли записку. Не зря я изредка проверяю эту пещеру.",
@@ -891,10 +1207,7 @@ function triggerEnding() {
     cipherEl.classList.add('show');
 }
 
-/* ============================================================
-   СТАРТ ИГРЫ
-   ============================================================ */
-function start() {
+function startChapter1() {
     try { sf.currentTime = 0; sf.play().catch(() => {}); } catch (e) {}
 
     setTimeout(() => {
@@ -928,6 +1241,1828 @@ function start() {
 
     }, 300);
 }
+
+/* ============================================================
+   МИНИ-ИГРА — ЛОГИКА
+   ============================================================ */
+const g2 = document.getElementById('g2');
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+let W = 0, H = 0;
+
+function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+    ctx.imageSmoothingEnabled = false;
+
+    const palkiCanvas = document.getElementById('palkiCanvas');
+    if (palkiCanvas) {
+        palkiCanvas.width = W;
+        palkiCanvas.height = H;
+    }
+
+    const eatElkiCanvas = document.getElementById('eatElkiCanvas');
+    if (eatElkiCanvas) {
+        eatElkiCanvas.width = W;
+        eatElkiCanvas.height = H;
+    }
+
+    if (gameState.phase === 'forest') positionKoster();
+
+    if (gameState.phase === 'eat') drawEatElki();
+}
+
+const humAudio = document.getElementById('hum');
+let humStarted = false;
+
+function startHum() {
+    if (humStarted || !humAudio) return;
+    humStarted = true;
+
+    try {
+        humAudio.currentTime = 0;
+        humAudio.volume = 0.35;
+        humAudio.loop = true;
+        const p = humAudio.play();
+        if (p && p.catch) p.catch(() => {});
+    } catch (e) {}
+}
+
+const IMG = {};
+
+const PLAYER_SPRITES = {
+    stand: ['person/stoit1.png', 'person/stoit2.png', 'person/stoit3.png'],
+    walkF: ['person/hodba1.png', 'person/hodba2.png', 'person/hodba3.png'],
+    side:  ['person/bok1.png',   'person/bok2.png',   'person/bok3.png'],
+    walkS: ['person/hod1.png',   'person/hod2.png',   'person/hod3.png']
+};
+
+const KOSTER_SPRITES = ['person/koster1.png', 'person/koster2.png'];
+const ELKA_SPRITE = 'person/elka.png';
+const TRAVA_SPRITE = 'person/trava.png';
+const TRAVA2_SPRITE = 'person/trava2.png';
+const YKOSTRA_SPRITES = ['person/ykostra1.png', 'person/ykostra2.png'];
+const EAT_SPRITES = [
+    'person/eat1.png', 'person/eat2.png', 'person/eat3.png',
+    'person/eat4.png', 'person/eat5.png', 'person/eat6.png'
+];
+const CMOTRIT_SPRITE = 'person/cmotrit.png';
+const CMOTRIT2_SPRITE = 'person/cmotrit2.png';
+const FON_SPRITE = 'person/fon.png';
+const PALKA_SPRITE = 'person/palka.png';
+
+function preloadImages(callback) {
+    const all = [];
+    Object.keys(PLAYER_SPRITES).forEach(k => {
+        PLAYER_SPRITES[k].forEach(p => all.push(p));
+    });
+    KOSTER_SPRITES.forEach(p => all.push(p));
+    all.push(ELKA_SPRITE);
+    all.push(TRAVA_SPRITE);
+    all.push(TRAVA2_SPRITE);
+    YKOSTRA_SPRITES.forEach(p => all.push(p));
+    EAT_SPRITES.forEach(p => all.push(p));
+    all.push(CMOTRIT_SPRITE);
+    all.push(CMOTRIT2_SPRITE);
+    all.push(FON_SPRITE);
+    all.push(PALKA_SPRITE);
+
+    let loaded = 0;
+    all.forEach(path => {
+        const img = new Image();
+        img.onload = () => {
+            IMG[path] = img;
+            loaded++;
+            if (loaded === all.length) callback();
+        };
+        img.onerror = () => {
+            loaded++;
+            if (loaded === all.length) callback();
+        };
+        img.src = path;
+    });
+}
+
+const gameState = {
+    phase: 'start',
+    lastTs: 0
+};
+
+gameState.forest = {
+    player: {
+        x: 0, y: 0,
+        dir: 'front',
+        moving: false,
+        frame: 0, frameAccum: 0,
+        speed: 10,
+        w: 160, h: 160
+    },
+    koster: {
+        x: 0, y: 0, w: 300, h: 300,
+        frame: 0, frameAccum: 0,
+        cropLeft: 0.15, cropRight: 0.15,
+        cropTop: 0.15, cropBottom: 0.15,
+        hitLeft: 0.32, hitTop: 0.35,
+        hitRight: 0.68, hitBottom: 0.70
+    },
+    elki: [],
+    travaTiles: [],
+    touchingKoster: false,
+    elkiGenerated: false
+};
+
+gameState.cutscene = {
+    frame: 0, frameAccum: 0, frameInterval: 700,
+    ykostraW: 900, ykostraH: 900,
+    dialogText: '.....',
+    elkiSide: [
+        { centerX: -0.22, centerY: 0.15, size: 1.8 },
+        { centerX: -0.18, centerY: 0.70, size: 1.5 },
+        { centerX: 1.23,  centerY: 0.15, size: 1.8 },
+        { centerX: 1.23,  centerY: 0.70, size: 1.5 }
+    ]
+};
+
+gameState.palki = {
+    active: false,
+    palki: [],
+    collected: 0,
+    total: 5,
+    player: { x: 0, y: 0, dir: 'front', moving: false, frame: 0, frameAccum: 0, speed: 10, w: 160, h: 160 },
+    elki: [],
+    travaTiles: []
+};
+
+gameState.eat = {
+    step: 0, frameAccum: 0, frameInterval: 500,
+    sequence: [
+        'person/eat1.png',
+        'person/eat2.png',
+        'person/eat3.png',
+        'person/eat4.png',
+        'person/eat3.png',
+        'person/eat4.png',
+        'person/eat3.png',
+        'person/eat4.png',
+        'person/eat1.png',
+        'person/eat5.png',
+        'person/eat6.png'
+    ],
+    durations: [500, 500, 500, 500, 500, 500, 500, 500, 500, 2000, 900]
+};
+
+const keys = { left: false, right: false, up: false, down: false };
+
+document.addEventListener('keydown', e => {
+    const k = (e.key || '').toLowerCase();
+    const code = e.code;
+    const isE = (k === 'e' || k === 'у' || code === 'KeyE');
+
+    if (isE && gameState.phase === 'forest' && gameState.forest.touchingKoster) {
+        startDotsScreen();
+        return;
+    }
+
+    if (k === 'arrowleft'  || k === 'a') keys.left  = true;
+    if (k === 'arrowright' || k === 'd') keys.right = true;
+    if (k === 'arrowup'    || k === 'w') keys.up    = true;
+    if (k === 'arrowdown'  || k === 's') keys.down  = true;
+});
+
+document.addEventListener('keyup', e => {
+    const k = (e.key || '').toLowerCase();
+    if (k === 'arrowleft'  || k === 'a') keys.left  = false;
+    if (k === 'arrowright' || k === 'd') keys.right = false;
+    if (k === 'arrowup'    || k === 'w') keys.up    = false;
+    if (k === 'arrowdown'  || k === 's') keys.down  = false;
+});
+
+const SPRITE_W = 160;
+const SPRITE_H = 160;
+
+const FRAME_TIME      = 150;
+const FRAME_TIME_UP   = 260;
+const FRAME_TIME_DOWN = 200;
+
+const KOSTER_FRAME_TIME = 500;
+
+const ELKA_W = 300;
+const ELKA_H = 420;
+
+const ELKA_HIT_OFFSET_X = 0.25;
+const ELKA_HIT_OFFSET_Y = 0.78;
+const ELKA_HIT_W_FACTOR = 0.50;
+const ELKA_HIT_H_FACTOR = 0.20;
+
+const TRAVA_TILE_W = 120;
+const TRAVA_TILE_H = 120;
+const TRAVA_CROP_L = 0.15;
+const TRAVA_CROP_R = 0.15;
+const TRAVA_CROP_T = 0.15;
+const TRAVA_CROP_B = 0.15;
+const TRAVA_CUTSCENE_SCALE = 3.6;
+
+/* ============================================================
+   ВОЗВРАТ В ЛОББИ
+   ============================================================ */
+function returnToLobby() {
+    g2.classList.remove('on');
+
+    gameState.phase = 'start';
+    gameState.lastTs = 0;
+
+    document.getElementById('startDotsScreen').classList.remove('hidden');
+    document.getElementById('startText').textContent = '';
+    document.getElementById('startContinue').style.display = 'none';
+
+    document.getElementById('dotsScreen').classList.remove('on');
+    document.getElementById('dotsText').textContent = '';
+
+    document.getElementById('cutsceneDialog').classList.remove('on');
+    document.getElementById('cmotritDialog').classList.remove('on');
+
+    document.getElementById('cmotritScene').classList.remove('on');
+    document.getElementById('cmotrit2Scene').classList.remove('on');
+    document.getElementById('palkiScene').classList.remove('on');
+    document.getElementById('eatScene').classList.remove('on');
+    document.getElementById('eatDotsScreen').classList.remove('on');
+    document.getElementById('interactHint').classList.remove('on');
+
+    document.getElementById('palkiHint').style.display = 'none';
+
+    const fadeEl = document.getElementById('fade');
+    fadeEl.classList.remove('on');
+    fadeEl.style.opacity = '0';
+    fadeEl.style.transition = 'opacity 1s ease';
+
+    try {
+        const hum = document.getElementById('hum');
+        hum.pause();
+        hum.currentTime = 0;
+    } catch (e) {}
+    humStarted = false;
+
+    try {
+        const amb = document.getElementById('amb');
+        amb.pause();
+        amb.currentTime = 0;
+    } catch (e) {}
+
+    try {
+        const fire = document.getElementById('fire');
+        fire.pause();
+        fire.currentTime = 0;
+    } catch (e) {}
+
+    stopStepSound();
+
+    try {
+        const meat = document.getElementById('meat');
+        meat.pause();
+        meat.currentTime = 0;
+    } catch (e) {}
+
+    try {
+        const lomaet = document.getElementById('lomaet');
+        lomaet.pause();
+        lomaet.currentTime = 0;
+    } catch (e) {}
+
+    startTyped = false;
+    gameState.forest.elkiGenerated = false;
+    gameState.palki.active = false;
+    gameState.eat.step = 0;
+
+    lobby.classList.add('on');
+}
+
+/* ============================================================
+   СТАРТ МИНИ-ИГРЫ
+   ============================================================ */
+function startChapter2() {
+    g2.classList.add('on');
+
+    startHum();
+
+    try {
+        const amb = document.getElementById('amb');
+        amb.currentTime = 0;
+        amb.volume = 0.3;
+        amb.loop = true;
+        const p = amb.play();
+        if (p && p.catch) p.catch(() => {});
+    } catch (e) {}
+
+    try {
+        const fire = document.getElementById('fire');
+        fire.currentTime = 0;
+        fire.volume = 0;
+        fire.loop = true;
+        const p = fire.play();
+        if (p && p.catch) p.catch(() => {});
+    } catch (e) {}
+
+    resize();
+    initForest();
+    typeStartText();
+}
+
+let startTyped = false;
+function typeStartText() {
+    if (startTyped) return;
+    startTyped = true;
+
+    const startText = document.getElementById('startText');
+    const startContinue = document.getElementById('startContinue');
+    const typeSound = document.getElementById('step');
+
+    const part1 = 'Идёшь?';
+    const part2 = 'Давай быстрее';
+
+    const PRINT_SPEED = 140;
+    const PAUSE_BETWEEN = 1200;
+
+    let typingDone = false;
+
+    function typeString(str, onDone) {
+        let idx = 0;
+        function next() {
+            if (idx >= str.length) {
+                if (onDone) onDone();
+                return;
+            }
+
+            startText.textContent += str.charAt(idx);
+
+            if (str.charAt(idx) !== ' ') {
+                try {
+                    typeSound.currentTime = 9;
+                    typeSound.volume = 0.18;
+                    const p = typeSound.play();
+                    if (p && p.catch) p.catch(() => {});
+                } catch (e) {}
+
+                setTimeout(() => {
+                    try { typeSound.pause(); typeSound.currentTime = 0; } catch (e) {}
+                }, 200);
+            }
+
+            idx++;
+            setTimeout(next, PRINT_SPEED);
+        }
+        next();
+    }
+
+    setTimeout(() => {
+        typeString(part1, () => {
+            setTimeout(() => {
+                startText.textContent += '\n\n';
+                setTimeout(() => {
+                    typeString(part2, () => {
+                        typingDone = true;
+                        startContinue.style.display = 'block';
+                    });
+                }, 400);
+            }, PAUSE_BETWEEN);
+        });
+    }, 500);
+
+    document.getElementById('startDotsScreen').addEventListener('click', () => {
+        if (!typingDone) return;
+
+        startHum();
+
+        document.getElementById('startDotsScreen').classList.add('hidden');
+
+        gameState.phase = 'forest';
+
+        resize();
+        initForest();
+    });
+}
+
+function startDotsScreen() {
+    gameState.phase = 'dots';
+    document.getElementById('interactHint').classList.remove('on');
+
+    stopStepSound();
+
+    const fade = document.getElementById('fade');
+    fade.classList.add('on');
+
+    setTimeout(() => {
+        document.getElementById('dotsScreen').classList.add('on');
+
+        const dotsText = document.getElementById('dotsText');
+        const continueText = document.getElementById('continueText');
+        const typeSound = document.getElementById('step');
+
+        const lines = [
+            'Тебя что-то тревожит, Карен?',
+            '...Нет.',
+            'Ты отдаляешься от нас в последнее время. Скажи честно: ты хочешь уйти? Ты же помнишь...',
+            'Помню. Помню.'
+        ];
+
+        dotsText.textContent = '';
+        continueText.style.display = 'none';
+
+        let lineIdx = 0;
+        let charIdx = 0;
+        let typingDone = false;
+
+        function printChar() {
+            const line = lines[lineIdx];
+
+            if (charIdx >= line.length) {
+                if (lineIdx >= lines.length - 1) {
+                    typingDone = true;
+                    continueText.style.display = 'block';
+                    return;
+                }
+
+                lineIdx++;
+                charIdx = 0;
+                dotsText.textContent += '\n\n';
+                setTimeout(printChar, 900);
+                return;
+            }
+
+            dotsText.textContent += line.charAt(charIdx);
+
+            if (line.charAt(charIdx) !== ' ') {
+                try {
+                    typeSound.currentTime = 9;
+                    typeSound.volume = 0.18;
+                    const p = typeSound.play();
+                    if (p && p.catch) p.catch(() => {});
+                } catch (e) {}
+
+                setTimeout(() => {
+                    try { typeSound.pause(); typeSound.currentTime = 0; } catch (e) {}
+                }, 200);
+            }
+
+            charIdx++;
+            setTimeout(printChar, 140);
+        }
+
+        setTimeout(printChar, 500);
+
+        document.getElementById('dotsScreen').addEventListener('click', function dotsClickHandler() {
+            if (!typingDone) return;
+
+            document.getElementById('dotsScreen').removeEventListener('click', dotsClickHandler);
+            document.getElementById('dotsScreen').classList.remove('on');
+
+            document.getElementById('fade').style.transition = 'none';
+            document.getElementById('fade').style.opacity = '1';
+
+            setTimeout(() => {
+                gameState.phase = 'cutscene';
+
+                const c = gameState.cutscene;
+                c.frame = 0;
+                c.frameAccum = 0;
+
+                showCutsceneDialog(
+                    'Ты славный парень. Лучше тебя мы вряд ли кого найдём.',
+                    () => {
+                        showCmotritTransition();
+                    }
+                );
+
+                document.getElementById('fade').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('fade').style.transition = 'opacity 1s ease';
+                }, 50);
+            }, 150);
+        }, { once: false });
+
+        fade.classList.remove('on');
+    }, 800);
+}
+
+function showCutsceneDialog(text, onDone) {
+    const dlg = document.getElementById('cutsceneDialog');
+    const dlgText = dlg.querySelector('.dialogText');
+    const dlgHint = dlg.querySelector('.dialogHint');
+
+    dlg.classList.add('on');
+    dlgText.textContent = '';
+    dlgHint.style.display = 'none';
+
+    const typeSound = document.getElementById('step');
+    let idx = 0;
+    let typingDone = false;
+
+    function printChar() {
+        if (idx >= text.length) {
+            typingDone = true;
+            dlgHint.style.display = 'block';
+            return;
+        }
+
+        dlgText.textContent += text.charAt(idx);
+
+        if (text.charAt(idx) !== ' ') {
+            try {
+                typeSound.currentTime = 9;
+                typeSound.volume = 0.18;
+                const p = typeSound.play();
+                if (p && p.catch) p.catch(() => {});
+            } catch (e) {}
+
+            setTimeout(() => {
+                try { typeSound.pause(); typeSound.currentTime = 0; } catch (e) {}
+            }, 200);
+        }
+
+        idx++;
+        setTimeout(printChar, 140);
+    }
+
+    printChar();
+
+    function clickHandler() {
+        if (!typingDone) return;
+        dlg.removeEventListener('click', clickHandler);
+        dlg.classList.remove('on');
+        onDone();
+    }
+
+    setTimeout(() => {
+        dlg.addEventListener('click', clickHandler);
+    }, 100);
+}
+
+function showCmotritTransition() {
+    document.getElementById('fade').classList.add('on');
+
+    setTimeout(() => {
+        gameState.phase = 'cmotrit';
+
+        try {
+            const fire = document.getElementById('fire');
+            fire.currentTime = 0;
+            fire.volume = 0.12;
+            fire.loop = true;
+            const p = fire.play();
+            if (p && p.catch) p.catch(() => {});
+        } catch (e) {}
+
+        document.getElementById('cmotritScene').classList.add('on');
+        document.getElementById('fade').classList.remove('on');
+
+        showCmotritDialog(
+            'Без тебя этого всего не было бы, да?',
+            () => {
+                document.getElementById('fade').classList.add('on');
+
+                setTimeout(() => {
+                    document.getElementById('cmotritScene').classList.remove('on');
+                    gameState.phase = 'cutscene';
+
+                    showCutsceneDialog(
+                        '...Да.',
+                        () => {
+                            document.getElementById('fade').classList.add('on');
+
+                            setTimeout(() => {
+                                gameState.phase = 'cmotrit2';
+                                document.getElementById('cmotrit2Scene').classList.add('on');
+                                document.getElementById('fade').classList.remove('on');
+
+                                setTimeout(() => {
+                                    showCmotrit2Dialog(
+                                        '...',
+                                        () => {
+                                            document.getElementById('fade').classList.add('on');
+
+                                            setTimeout(() => {
+                                                document.getElementById('cmotrit2Scene').classList.remove('on');
+                                                gameState.phase = 'cutscene';
+
+                                                document.getElementById('fade').classList.remove('on');
+
+                                                showYkostraPalkiDialog();
+                                            }, 800);
+                                        }
+                                    );
+                                }, 3000);
+                            }, 800);
+                        }
+                    );
+
+                    document.getElementById('fade').classList.remove('on');
+                }, 800);
+            }
+        );
+    }, 800);
+}
+
+function showCmotritDialog(text, onDone) {
+    const dlg = document.getElementById('cmotritDialog');
+    const dlgText = dlg.querySelector('.dialogText');
+    const dlgHint = dlg.querySelector('.dialogHint');
+
+    dlg.classList.add('on');
+    dlgText.textContent = '';
+    dlgHint.style.display = 'none';
+
+    const typeSound = document.getElementById('step');
+    let idx = 0;
+    let typingDone = false;
+
+    function printChar() {
+        if (idx >= text.length) {
+            typingDone = true;
+            dlgHint.style.display = 'block';
+            return;
+        }
+
+        dlgText.textContent += text.charAt(idx);
+
+        if (text.charAt(idx) !== ' ') {
+            try {
+                typeSound.currentTime = 9;
+                typeSound.volume = 0.18;
+                const p = typeSound.play();
+                if (p && p.catch) p.catch(() => {});
+            } catch (e) {}
+
+            setTimeout(() => {
+                try { typeSound.pause(); typeSound.currentTime = 0; } catch (e) {}
+            }, 200);
+        }
+
+        idx++;
+        setTimeout(printChar, 140);
+    }
+
+    printChar();
+
+    function clickHandler() {
+        if (!typingDone) return;
+        dlg.removeEventListener('click', clickHandler);
+        dlg.classList.remove('on');
+        onDone();
+    }
+
+    setTimeout(() => {
+        dlg.addEventListener('click', clickHandler);
+    }, 100);
+}
+
+function showCmotrit2Dialog(text, onDone) {
+    const dlg = document.getElementById('cmotritDialog');
+    const dlgText = dlg.querySelector('.dialogText');
+    const dlgHint = dlg.querySelector('.dialogHint');
+
+    dlg.classList.add('on');
+    dlgText.textContent = '';
+    dlgHint.style.display = 'none';
+
+    const typeSound = document.getElementById('step');
+    let idx = 0;
+    let typingDone = false;
+
+    function printChar() {
+        if (idx >= text.length) {
+            typingDone = true;
+            dlgHint.style.display = 'block';
+            return;
+        }
+
+        dlgText.textContent += text.charAt(idx);
+
+        if (text.charAt(idx) !== ' ') {
+            try {
+                typeSound.currentTime = 9;
+                typeSound.volume = 0.18;
+                const p = typeSound.play();
+                if (p && p.catch) p.catch(() => {});
+            } catch (e) {}
+
+            setTimeout(() => {
+                try { typeSound.pause(); typeSound.currentTime = 0; } catch (e) {}
+            }, 200);
+        }
+
+        idx++;
+        setTimeout(printChar, 140);
+    }
+
+    printChar();
+
+    function clickHandler() {
+        if (!typingDone) return;
+        dlg.removeEventListener('click', clickHandler);
+        dlg.classList.remove('on');
+        onDone();
+    }
+
+    setTimeout(() => {
+        dlg.addEventListener('click', clickHandler);
+    }, 100);
+}
+
+/* ============================================================
+   ДИАЛОГ У КОСТРА — КАЖДАЯ РЕПЛИКА В ОТДЕЛЬНОМ ОКНЕ
+   Последняя реплика: «Ты будешь сейчас спорить?»
+   ============================================================ */
+function showYkostraPalkiDialog() {
+    const lines = [
+        'Будь добр, сходи за палками.',
+        'Почему я?',
+        'Твоя очередь. Мы по пути собирали.',
+        'Я тоже собирал.',
+        'Ты будешь сейчас спорить?'
+    ];
+
+    let lineIdx = 0;
+
+    function showNextLine() {
+        if (lineIdx >= lines.length) {
+            startPalkiTransition();
+            return;
+        }
+
+        const text = lines[lineIdx];
+        lineIdx++;
+
+        showCutsceneDialog(text, () => {
+            showNextLine();
+        });
+    }
+
+    showNextLine();
+}
+
+function startPalkiTransition() {
+    const fade = document.getElementById('fade');
+    fade.style.transition = 'none';
+    fade.style.opacity = '1';
+    fade.classList.add('on');
+
+    try {
+        const stepAudio = document.getElementById('step');
+        stepAudio.currentTime = 4;
+        stepAudio.volume = 0.25;
+        stepAudio.loop = false;
+        const p = stepAudio.play();
+        if (p && p.catch) p.catch(() => {});
+    } catch (e) {}
+
+    setTimeout(() => {
+        try {
+            const stepAudio = document.getElementById('step');
+            stepAudio.pause();
+            stepAudio.currentTime = 0;
+        } catch (e) {}
+
+        gameState.phase = 'palki';
+        initPalkiScene();
+        document.getElementById('palkiScene').classList.add('on');
+
+        fade.style.transition = 'opacity 1s ease';
+        fade.style.opacity = '0';
+        setTimeout(() => {
+            fade.classList.remove('on');
+        }, 1000);
+    }, 1600);
+}
+
+function showEatThoughtScreen() {
+    gameState.phase = 'eatThought';
+
+    stopStepSound();
+
+    const fade = document.getElementById('fade');
+    fade.style.transition = 'none';
+    fade.style.opacity = '1';
+    fade.classList.add('on');
+
+    setTimeout(() => {
+        const eatDotsScreen = document.getElementById('eatDotsScreen');
+        const eatDotsText = document.getElementById('eatDotsText');
+        const eatContinueText = document.getElementById('eatContinueText');
+
+        eatDotsText.style.fontSize = '14px';
+        eatDotsText.style.letterSpacing = '1px';
+        eatDotsText.style.lineHeight = '2.2';
+        eatDotsText.style.textAlign = 'center';
+        eatDotsText.style.padding = '20px';
+        eatDotsText.style.maxWidth = '90vw';
+        eatDotsText.textContent = '';
+        eatContinueText.style.display = 'none';
+
+        eatDotsScreen.classList.add('on');
+
+        const text = 'Они специально меня отправляют для проверки на верность в глубь леса?';
+        const typeSound = document.getElementById('step');
+        let idx = 0;
+        let typingDone = false;
+
+        function printChar() {
+            if (idx >= text.length) {
+                typingDone = true;
+                eatContinueText.style.display = 'block';
+                return;
+            }
+
+            eatDotsText.textContent += text.charAt(idx);
+
+            if (text.charAt(idx) !== ' ') {
+                try {
+                    typeSound.currentTime = 9;
+                    typeSound.volume = 0.18;
+                    const p = typeSound.play();
+                    if (p && p.catch) p.catch(() => {});
+                } catch (e) {}
+
+                setTimeout(() => {
+                    try { typeSound.pause(); typeSound.currentTime = 0; } catch (e) {}
+                }, 200);
+            }
+
+            idx++;
+            setTimeout(printChar, 140);
+        }
+
+        setTimeout(printChar, 400);
+
+        function clickHandler() {
+            if (!typingDone) return;
+            eatDotsScreen.removeEventListener('click', clickHandler);
+
+            eatDotsScreen.classList.remove('on');
+
+            const fade2 = document.getElementById('fade');
+            fade2.style.transition = 'opacity 0.6s ease';
+            fade2.style.opacity = '1';
+            fade2.classList.add('on');
+
+            try {
+                const stepAudio = document.getElementById('step');
+                stepAudio.currentTime = 4;
+                stepAudio.volume = 0.3;
+                stepAudio.loop = true;
+                const p = stepAudio.play();
+                if (p && p.catch) p.catch(() => {});
+            } catch (e) {}
+
+            setTimeout(() => {
+                try {
+                    const stepAudio = document.getElementById('step');
+                    stepAudio.pause();
+                    stepAudio.currentTime = 0;
+                } catch (e) {}
+
+                gameState.phase = 'eat';
+                gameState.eat.step = 0;
+                gameState.eat.frameAccum = 0;
+
+                document.getElementById('eatScene').classList.add('on');
+                document.getElementById('eatImage').src = gameState.eat.sequence[0];
+
+                drawEatElki();
+
+                setTimeout(() => {
+                    try {
+                        const meat = document.getElementById('meat');
+                        meat.currentTime = 0;
+                        meat.volume = 0.25;
+                        meat.loop = false;
+                        const p = meat.play();
+                        if (p && p.catch) p.catch(() => {});
+                    } catch (e) {}
+                }, 1000);
+
+                fade2.style.opacity = '0';
+                setTimeout(() => {
+                    fade2.classList.remove('on');
+                }, 1000);
+            }, 2500);
+        }
+
+        eatDotsScreen.addEventListener('click', clickHandler);
+    }, 600);
+}
+
+function drawEatElki() {
+    const elkiCanvas = document.getElementById('eatElkiCanvas');
+    if (!elkiCanvas) return;
+
+    elkiCanvas.width = W;
+    elkiCanvas.height = H;
+
+    const c = elkiCanvas.getContext('2d');
+    c.imageSmoothingEnabled = false;
+    c.clearRect(0, 0, W, H);
+
+    const elkaImg = IMG[ELKA_SPRITE];
+    if (!elkaImg) return;
+
+    const imgW = elkaImg.width  || 200;
+    const imgH = elkaImg.height || 300;
+    const aspect = imgW / imgH;
+
+    const elkiSide = [
+        { centerX: -0.18, centerY: 0.18, size: 2.0 },
+        { centerX: -0.14, centerY: 0.75, size: 1.7 },
+        { centerX: 1.18,  centerY: 0.18, size: 2.0 },
+        { centerX: 1.14,  centerY: 0.75, size: 1.7 }
+    ];
+
+    elkiSide.forEach(e => {
+        const baseH = H * e.size;
+        const baseW = baseH * aspect;
+        const centerX = e.centerX * W;
+        const centerY = e.centerY * H;
+        const x = centerX - baseW / 2;
+        const y = centerY - baseH / 2;
+
+        c.save();
+        c.filter = 'brightness(0.03)';
+        const off = 4;
+        const directions = [
+            [-off, 0], [off, 0], [0, -off], [0, off],
+            [-off, -off], [off, -off], [-off, off], [off, off]
+        ];
+        directions.forEach(([ox, oy]) => {
+            c.drawImage(elkaImg, x + ox, y + oy, baseW, baseH);
+        });
+
+        c.filter = 'brightness(0.12)';
+        c.drawImage(elkaImg, x, y, baseW, baseH);
+        c.filter = 'none';
+        c.restore();
+    });
+}
+
+function initForest() {
+    const f = gameState.forest;
+    const p = f.player;
+
+    p.x = W / 2 - SPRITE_W / 2;
+    p.y = H - SPRITE_H - 40;
+    p.dir = 'front';
+    p.frame = 0;
+    p.frameAccum = 0;
+    p.moving = false;
+
+    const k = f.koster;
+    k.frame = 0;
+    k.frameAccum = 0;
+    positionKoster();
+
+    if (!f.elkiGenerated) {
+        generateElki();
+        generateTravaTiles();
+        f.elkiGenerated = true;
+    }
+}
+
+function positionKoster() {
+    const k = gameState.forest.koster;
+    k.x = W / 2 - k.w / 2;
+    k.y = H / 2 - k.h / 2;
+}
+
+function generateElki() {
+    const f = gameState.forest;
+    f.elki = [];
+
+    const k = f.koster;
+    const kx = k.x + k.w / 2;
+    const ky = k.y + k.h / 2;
+
+    const ringRadius = 360;
+    const ringCount = 10;
+
+    function addElka(x, y) {
+        const dx = (x + ELKA_W / 2) - kx;
+        const dy = (y + ELKA_H / 2) - ky;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < ringRadius) return;
+        if (x < -ELKA_W * 0.3 || x > W - ELKA_W * 0.5) return;
+        if (y < -ELKA_H * 0.9 || y > H - ELKA_H * 0.4) return;
+
+        f.elki.push({ x: x, y: y, w: ELKA_W, h: ELKA_H });
+    }
+
+    for (let i = 0; i < ringCount; i++) {
+        const angle = (i / ringCount) * Math.PI * 2;
+        if (Math.sin(angle) > 0.7) continue;
+
+        const rx = kx + Math.cos(angle) * (ringRadius + 40) - ELKA_W / 2;
+        const ry = ky + Math.sin(angle) * (ringRadius + 40) - ELKA_H / 2;
+
+        addElka(rx, ry);
+    }
+
+    for (let row = 0; row < 3; row++) {
+        for (let x = -100; x < W + 100; x += 180) {
+            const ox = (Math.random() - 0.5) * 50;
+            const oy = (Math.random() - 0.5) * 40;
+            addElka(x + ox, -row * 100 + oy);
+        }
+    }
+
+    for (let col = 0; col < 4; col++) {
+        for (let y = 200; y < H + 100; y += 180) {
+            const ox = (Math.random() - 0.5) * 40;
+            const oy = (Math.random() - 0.5) * 60;
+            addElka(-col * 90 - 60 + ox, y + oy);
+        }
+    }
+
+    for (let col = 0; col < 4; col++) {
+        for (let y = 200; y < H + 100; y += 180) {
+            const ox = (Math.random() - 0.5) * 40;
+            const oy = (Math.random() - 0.5) * 60;
+            addElka(W - ELKA_W + col * 90 + 60 + ox, y + oy);
+        }
+    }
+
+    for (let col = 0; col < 2; col++) {
+        for (let y = 100; y < H + 100; y += 240) {
+            const ox = (Math.random() - 0.5) * 60;
+            const oy = (Math.random() - 0.5) * 80;
+            addElka(120 + col * 180 + ox, y + oy);
+        }
+    }
+    for (let col = 0; col < 2; col++) {
+        for (let y = 100; y < H + 100; y += 240) {
+            const ox = (Math.random() - 0.5) * 60;
+            const oy = (Math.random() - 0.5) * 80;
+            addElka(W - ELKA_W - 120 - col * 180 + ox, y + oy);
+        }
+    }
+
+    for (let i = 0; i < 4; i++) {
+        addElka(-60 + Math.random() * 250, H - ELKA_H + 60 + Math.random() * 100);
+    }
+    for (let i = 0; i < 4; i++) {
+        addElka(W - ELKA_W - 200 + Math.random() * 250, H - ELKA_H + 60 + Math.random() * 100);
+    }
+}
+
+function generateTravaTiles() {
+    const f = gameState.forest;
+    f.travaTiles = [];
+
+    for (let x = 0; x < W + TRAVA_TILE_W; x += TRAVA_TILE_W) {
+        for (let y = 0; y < H + TRAVA_TILE_H; y += TRAVA_TILE_H) {
+            const useTrava2 = Math.random() > 0.5;
+            f.travaTiles.push({
+                x: x,
+                y: y,
+                type: useTrava2 ? 'trava2' : 'trava1'
+            });
+        }
+    }
+}
+
+function initPalkiScene() {
+    const p = gameState.palki;
+
+    p.active = true;
+    p.collected = 0;
+    p.total = 5;
+    p.palki = [];
+    p.elki = [];
+    p.travaTiles = [];
+
+    const canvasEl = document.getElementById('palkiCanvas');
+    canvasEl.width = W;
+    canvasEl.height = H;
+    const c = canvasEl.getContext('2d');
+    c.imageSmoothingEnabled = false;
+
+    p.player.x = W / 2 - p.player.w / 2;
+    p.player.y = H - p.player.h - 40;
+    p.player.dir = 'front';
+    p.player.moving = false;
+    p.player.frame = 0;
+    p.player.frameAccum = 0;
+
+    for (let x = 0; x < W + TRAVA_TILE_W; x += TRAVA_TILE_W) {
+        for (let y = 0; y < H + TRAVA_TILE_H; y += TRAVA_TILE_H) {
+            p.travaTiles.push({
+                x: x,
+                y: y,
+                type: Math.random() > 0.5 ? 'trava2' : 'trava1'
+            });
+        }
+    }
+
+    const elkaCount = Math.floor((W * H) / 60000);
+    for (let i = 0; i < elkaCount; i++) {
+        const ex = Math.random() * (W + ELKA_W) - ELKA_W / 2;
+        const ey = Math.random() * (H + ELKA_H) - ELKA_H / 2;
+
+        const distToPlayer = Math.sqrt(
+            Math.pow(ex - (p.player.x + p.player.w / 2), 2) +
+            Math.pow(ey - (p.player.y + p.player.h / 2), 2)
+        );
+
+        if (distToPlayer < 250) continue;
+
+        p.elki.push({ x: ex, y: ey });
+    }
+
+    for (let i = 0; i < p.total; i++) {
+        let px, py, tries = 0;
+        let valid = false;
+
+        while (tries < 60 && !valid) {
+            px = 200 + Math.random() * (W - 400);
+            py = 200 + Math.random() * (H - 400);
+            tries++;
+
+            const distToPlayer = Math.sqrt(
+                Math.pow(px - (p.player.x + p.player.w / 2), 2) +
+                Math.pow(py - (p.player.y + p.player.h / 2), 2)
+            );
+
+            if (distToPlayer < 150) continue;
+
+            let insideElka = false;
+            for (let j = 0; j < p.elki.length; j++) {
+                const e = p.elki[j];
+                const hitX = e.x + ELKA_W * ELKA_HIT_OFFSET_X;
+                const hitY = e.y + ELKA_H * ELKA_HIT_OFFSET_Y;
+                const hitW = ELKA_W * ELKA_HIT_W_FACTOR;
+                const hitH = ELKA_H * ELKA_HIT_H_FACTOR;
+
+                if (px < hitX + hitW && px + 80 > hitX &&
+                    py < hitY + hitH && py + 80 > hitY) {
+                    insideElka = true;
+                    break;
+                }
+            }
+
+            if (insideElka) continue;
+            valid = true;
+        }
+
+        if (valid) {
+            p.palki.push({
+                x: px,
+                y: py,
+                collected: false,
+                w: 80,
+                h: 80
+            });
+        }
+    }
+
+    document.getElementById('palkiCount').textContent = '0';
+    document.getElementById('palkiHint').style.display = 'block';
+}
+
+function updatePalkiScene(dt) {
+    const p = gameState.palki;
+    if (!p.active) return;
+
+    const pl = p.player;
+
+    let dx = 0, dy = 0;
+    let newDir = pl.dir;
+
+    if (keys.left)  { dx -= pl.speed; newDir = 'left'; }
+    if (keys.right) { dx += pl.speed; newDir = 'right'; }
+    if (keys.up)    { dy -= pl.speed; newDir = 'front'; }
+    if (keys.down)  { dy += pl.speed; newDir = 'back'; }
+
+    const moving = (dx !== 0 || dy !== 0);
+
+    if (newDir !== pl.dir || moving !== pl.moving) {
+        pl.frame = 0;
+        pl.frameAccum = 0;
+    }
+
+    pl.dir = newDir;
+    pl.moving = moving;
+
+    if (!moving) {
+        stopStepSound();
+    }
+
+    pl.x = Math.max(0, Math.min(W - pl.w, pl.x + dx));
+    pl.y = Math.max(0, Math.min(H - pl.h, pl.y + dy));
+
+    let animSpeed = FRAME_TIME;
+    if (pl.dir === 'front') animSpeed = FRAME_TIME_UP;
+    if (pl.dir === 'back')  animSpeed = FRAME_TIME_DOWN;
+
+    pl.frameAccum += dt;
+    if (pl.frameAccum >= animSpeed) {
+        pl.frameAccum = 0;
+        pl.frame = (pl.frame + 1) % 3;
+        if (pl.moving) playStepSound();
+    }
+
+    p.palki.forEach(pk => {
+        if (pk.collected) return;
+
+        const distX = Math.abs((pl.x + pl.w / 2) - (pk.x + pk.w / 2));
+        const distY = Math.abs((pl.y + pl.h / 2) - (pk.y + pk.h / 2));
+
+        if (distX < 120 && distY < 120) {
+            pk.collected = true;
+            p.collected++;
+            document.getElementById('palkiCount').textContent = p.collected;
+
+            try {
+                const lomaet = document.getElementById('lomaet');
+                lomaet.currentTime = 0;
+                lomaet.volume = 0.4;
+                const pp = lomaet.play();
+                if (pp && pp.catch) pp.catch(() => {});
+            } catch (e) {}
+
+            if (p.collected >= p.total) {
+                p.active = false;
+                stopStepSound();
+
+                setTimeout(() => {
+                    document.getElementById('palkiScene').classList.remove('on');
+                    document.getElementById('palkiHint').style.display = 'none';
+
+                    showEatThoughtScreen();
+                }, 800);
+            }
+        }
+    });
+}
+
+function renderPalkiScene() {
+    const p = gameState.palki;
+    if (!p.active) return;
+
+    const canvasEl = document.getElementById('palkiCanvas');
+    const c = canvasEl.getContext('2d');
+    c.imageSmoothingEnabled = false;
+
+    c.fillStyle = '#101C12';
+    c.fillRect(0, 0, W, H);
+
+    const trava1 = IMG[TRAVA_SPRITE];
+    const trava2 = IMG[TRAVA2_SPRITE];
+    if (trava1 || trava2) {
+        c.save();
+        c.filter = 'brightness(0.35)';
+        p.travaTiles.forEach(t => {
+            const travaImg = (t.type === 'trava2' && trava2) ? trava2 : (trava1 || trava2);
+            if (!travaImg) return;
+            const sx = travaImg.width  * TRAVA_CROP_L;
+            const sy = travaImg.height * TRAVA_CROP_T;
+            const sw = travaImg.width  * (1 - TRAVA_CROP_L - TRAVA_CROP_R);
+            const sh = travaImg.height * (1 - TRAVA_CROP_T - TRAVA_CROP_B);
+            c.drawImage(travaImg, sx, sy, sw, sh, t.x, t.y, TRAVA_TILE_W, TRAVA_TILE_H);
+        });
+        c.filter = 'none';
+        c.restore();
+    }
+
+    const palkaImg = IMG[PALKA_SPRITE];
+    if (palkaImg) {
+        p.palki.forEach(pk => {
+            if (pk.collected) return;
+            c.drawImage(palkaImg, pk.x, pk.y, pk.w, pk.h);
+        });
+    }
+
+    const drawables = [];
+
+    const elkaImg = IMG[ELKA_SPRITE];
+    if (elkaImg) {
+        p.elki.forEach(e => {
+            drawables.push({ type: 'elka', baseY: e.y + ELKA_H, elka: e });
+        });
+    }
+
+    const pl = p.player;
+    drawables.push({ type: 'player', baseY: pl.y + pl.h });
+
+    drawables.sort((a, b) => a.baseY - b.baseY);
+
+    drawables.forEach(d => {
+        if (d.type === 'elka') {
+            const e = d.elka;
+            c.save();
+            c.filter = 'brightness(0.05)';
+            const off = 2;
+            const directions = [
+                [-off, 0], [off, 0], [0, -off], [0, off],
+                [-off, -off], [off, -off], [-off, off], [off, off]
+            ];
+            directions.forEach(([ox, oy]) => {
+                c.drawImage(elkaImg, e.x + ox, e.y + oy, ELKA_W, ELKA_H);
+            });
+            c.filter = 'brightness(0.2)';
+            c.drawImage(elkaImg, e.x, e.y, ELKA_W, ELKA_H);
+            c.filter = 'none';
+            c.restore();
+        }
+
+        if (d.type === 'player') {
+            let path, flip = false;
+
+            if (pl.dir === 'left' || pl.dir === 'right') {
+                path = pl.moving ? PLAYER_SPRITES.walkS[pl.frame] : PLAYER_SPRITES.side[pl.frame];
+                flip = (pl.dir === 'left');
+            } else {
+                path = pl.moving ? PLAYER_SPRITES.walkF[pl.frame] : PLAYER_SPRITES.stand[pl.frame];
+            }
+
+            const img = IMG[path];
+            if (img) {
+                c.save();
+                if (flip) {
+                    c.translate(pl.x + SPRITE_W, pl.y);
+                    c.scale(-1, 1);
+                    c.drawImage(img, 0, 0, SPRITE_W, SPRITE_H);
+                } else {
+                    c.drawImage(img, pl.x, pl.y, SPRITE_W, SPRITE_H);
+                }
+                c.restore();
+            }
+        }
+    });
+}
+
+function updateForest(dt) {
+    if (gameState.phase === 'cutscene') { updateCutscene(dt); return; }
+    if (gameState.phase === 'eat') { updateEat(dt); return; }
+    if (gameState.phase === 'palki') { updatePalkiScene(dt); renderPalkiScene(); return; }
+    if (gameState.phase !== 'forest') return;
+
+    const p = gameState.forest.player;
+    const k = gameState.forest.koster;
+
+    let dx = 0, dy = 0;
+    let newDir = p.dir;
+
+    if (keys.left)  { dx -= p.speed; newDir = 'left'; }
+    if (keys.right) { dx += p.speed; newDir = 'right'; }
+    if (keys.up)    { dy -= p.speed; newDir = 'front'; }
+    if (keys.down)  { dy += p.speed; newDir = 'back'; }
+
+    const moving = (dx !== 0 || dy !== 0);
+
+    if (newDir !== p.dir || moving !== p.moving) {
+        p.frame = 0;
+        p.frameAccum = 0;
+    }
+
+    p.dir = newDir;
+    p.moving = moving;
+
+    if (!moving) {
+        stopStepSound();
+    }
+
+    let nx = p.x + dx;
+    if (!collidesWithAnyElka(nx, p.y) && !collidesWithKoster(nx, p.y)) p.x = nx;
+
+    let ny = p.y + dy;
+    if (!collidesWithAnyElka(p.x, ny) && !collidesWithKoster(p.x, ny)) p.y = ny;
+
+    p.x = Math.max(0, Math.min(W - p.w, p.x));
+    p.y = Math.max(0, Math.min(H - p.h, p.y));
+
+    let animSpeed = FRAME_TIME;
+    if (p.dir === 'front') animSpeed = FRAME_TIME_UP;
+    if (p.dir === 'back')  animSpeed = FRAME_TIME_DOWN;
+
+    p.frameAccum += dt;
+    if (p.frameAccum >= animSpeed) {
+        p.frameAccum = 0;
+        p.frame = (p.frame + 1) % 3;
+
+        if (p.moving) {
+            playStepSound();
+        }
+    }
+
+    k.frameAccum += dt;
+    if (k.frameAccum >= KOSTER_FRAME_TIME) {
+        k.frameAccum = 0;
+        k.frame = (k.frame + 1) % 2;
+    }
+
+    gameState.forest.touchingKoster = isTouchingKoster();
+    const hintEl = document.getElementById('interactHint');
+    if (gameState.forest.touchingKoster) {
+        hintEl.classList.add('on');
+    } else {
+        hintEl.classList.remove('on');
+    }
+
+    updateFireVolume();
+}
+
+function updateFireVolume() {
+    const p = gameState.forest.player;
+    const k = gameState.forest.koster;
+    const fire = document.getElementById('fire');
+    if (!fire) return;
+
+    const px = p.x + p.w / 2;
+    const py = p.y + p.h / 2;
+    const kx = k.x + k.w / 2;
+    const ky = k.y + k.h / 2;
+
+    const dx = px - kx;
+    const dy = py - ky;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    const maxDist = 300;
+    const minDist = 80;
+
+    let vol = 0;
+    if (dist < minDist) {
+        vol = 0.12;
+    } else if (dist < maxDist) {
+        vol = 0.12 * (1 - (dist - minDist) / (maxDist - minDist));
+    }
+
+    try { fire.volume = Math.max(0, Math.min(1, vol)); } catch (e) {}
+}
+
+let stepAudioPlaying = false;
+let stepAudioLoopTimeout = null;
+
+function playStepSound() {
+    const stepAudio = document.getElementById('step');
+    if (!stepAudio) return;
+    if (stepAudioPlaying) return;
+
+    stepAudioPlaying = true;
+
+    try {
+        stepAudio.currentTime = 4;
+        stepAudio.volume = 0.25;
+        const p2 = stepAudio.play();
+        if (p2 && p2.catch) p2.catch(() => {});
+    } catch (e) {}
+
+    function loopStep() {
+        if (!stepAudioPlaying) return;
+        try {
+            stepAudio.currentTime = 4;
+            stepAudio.play().catch(() => {});
+        } catch (e) {}
+        stepAudioLoopTimeout = setTimeout(loopStep, 1000);
+    }
+    stepAudioLoopTimeout = setTimeout(loopStep, 1000);
+}
+
+function stopStepSound() {
+    const stepAudio = document.getElementById('step');
+    if (!stepAudio) return;
+
+    stepAudioPlaying = false;
+
+    if (stepAudioLoopTimeout) {
+        clearTimeout(stepAudioLoopTimeout);
+        stepAudioLoopTimeout = null;
+    }
+
+    try {
+        stepAudio.pause();
+        stepAudio.currentTime = 0;
+    } catch (e) {}
+}
+
+function updateCutscene(dt) {
+    const c = gameState.cutscene;
+    c.frameAccum += dt;
+    if (c.frameAccum >= c.frameInterval) {
+        c.frameAccum = 0;
+        c.frame = (c.frame + 1) % 2;
+    }
+}
+
+function updateEat(dt) {
+    const e = gameState.eat;
+    const currentDuration = e.durations[e.step] || e.frameInterval;
+
+    e.frameAccum += dt;
+    if (e.frameAccum >= currentDuration) {
+        e.frameAccum = 0;
+        e.step++;
+        if (e.step >= e.sequence.length) {
+            setTimeout(() => {
+                returnToLobby();
+            }, 1200);
+            return;
+        }
+        document.getElementById('eatImage').src = e.sequence[e.step];
+
+        if (e.step === 8) {
+            try {
+                const meat = document.getElementById('meat');
+                meat.pause();
+                meat.currentTime = 0;
+            } catch (err) {}
+        }
+
+        if (e.step === 9) {
+            try {
+                const lomaet = document.getElementById('lomaet');
+                lomaet.currentTime = 0;
+                lomaet.volume = 0.4;
+                const p = lomaet.play();
+                if (p && p.catch) p.catch(() => {});
+            } catch (err) {}
+        }
+    }
+}
+
+function isTouchingKoster() {
+    const p = gameState.forest.player;
+    const k = gameState.forest.koster;
+
+    const playerX = p.x + p.w * 0.25;
+    const playerY = p.y + p.h * 0.6;
+    const playerW = p.w * 0.5;
+    const playerH = p.h * 0.35;
+
+    const kosterX = k.x + k.w * k.hitLeft;
+    const kosterY = k.y + k.h * k.hitTop;
+    const kosterW = k.w * (k.hitRight - k.hitLeft);
+    const kosterH = k.h * (k.hitBottom - k.hitTop);
+
+    const gap = 20;
+
+    const overlapX = playerX < kosterX + kosterW + gap && playerX + playerW > kosterX - gap;
+    const overlapY = playerY < kosterY + kosterH + gap && playerY + playerH > kosterY - gap;
+
+    return overlapX && overlapY;
+}
+
+function getPlayerHitbox(x, y) {
+    const p = gameState.forest.player;
+    return {
+        x: x + p.w * 0.25,
+        y: y + p.h * 0.6,
+        w: p.w * 0.5,
+        h: p.h * 0.35
+    };
+}
+
+function collidesWithKoster(x, y) {
+    const k = gameState.forest.koster;
+    const a = getPlayerHitbox(x, y);
+    const b = {
+        x: k.x + k.w * k.hitLeft,
+        y: k.y + k.h * k.hitTop,
+        w: k.w * (k.hitRight - k.hitLeft),
+        h: k.h * (k.hitBottom - k.hitTop)
+    };
+    return a.x < b.x + b.w && a.x + a.w > b.x &&
+           a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+function collidesWithAnyElka(x, y) {
+    const a = getPlayerHitbox(x, y);
+    const elki = gameState.forest.elki;
+
+    for (let i = 0; i < elki.length; i++) {
+        const e = elki[i];
+        const b = {
+            x: e.x + e.w * ELKA_HIT_OFFSET_X,
+            y: e.y + e.h * ELKA_HIT_OFFSET_Y,
+            w: e.w * ELKA_HIT_W_FACTOR,
+            h: e.h * ELKA_HIT_H_FACTOR
+        };
+        if (a.x < b.x + b.w && a.x + a.w > b.x &&
+            a.y < b.y + b.h && a.y + a.h > b.y) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function drawTrava(scale) {
+    const trava1 = IMG[TRAVA_SPRITE];
+    const trava2 = IMG[TRAVA2_SPRITE];
+    if (!trava1 && !trava2) return;
+
+    const tw = TRAVA_TILE_W * (scale || 1);
+    const th = TRAVA_TILE_H * (scale || 1);
+
+    ctx.save();
+    ctx.filter = 'brightness(0.35)';
+
+    gameState.forest.travaTiles.forEach(t => {
+        const travaImg = (t.type === 'trava2' && trava2) ? trava2 : (trava1 || trava2);
+        if (!travaImg) return;
+
+        const sx = travaImg.width  * TRAVA_CROP_L;
+        const sy = travaImg.height * TRAVA_CROP_T;
+        const sw = travaImg.width  * (1 - TRAVA_CROP_L - TRAVA_CROP_R);
+        const sh = travaImg.height * (1 - TRAVA_CROP_T - TRAVA_CROP_B);
+
+        ctx.drawImage(travaImg, sx, sy, sw, sh, t.x * (scale || 1), t.y * (scale || 1), tw, th);
+    });
+
+    ctx.filter = 'none';
+    ctx.restore();
+}
+
+function renderForest() {
+    if (gameState.phase !== 'forest' && gameState.phase !== 'cutscene') return;
+
+    ctx.fillStyle = '#101C12';
+    ctx.fillRect(0, 0, W, H);
+
+    if (gameState.phase === 'forest') {
+        drawTrava(1);
+
+        ctx.fillStyle = '#3f7a3f';
+        ctx.font = '9px "Press Start 2P", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('WASD / стрелки — ходить', W / 2, 20);
+
+        const p = gameState.forest.player;
+        const k = gameState.forest.koster;
+        const drawables = [];
+
+        gameState.forest.elki.forEach(e => {
+            drawables.push({ type: 'elka', baseY: e.y + e.h, elka: e });
+        });
+
+        drawables.push({ type: 'koster', baseY: k.y + k.h * k.hitBottom });
+        drawables.push({ type: 'player', baseY: p.y + p.h });
+
+        drawables.sort((a, b) => a.baseY - b.baseY);
+
+        drawables.forEach(d => {
+            if (d.type === 'elka') drawElka(d.elka);
+            if (d.type === 'koster') drawKoster();
+            if (d.type === 'player') drawPlayer();
+        });
+    } else {
+        drawTrava(TRAVA_CUTSCENE_SCALE);
+        drawYkostra();
+        drawCutsceneElki();
+    }
+}
+
+function drawCutsceneElki() {
+    const elkaImg = IMG[ELKA_SPRITE];
+    if (!elkaImg) return;
+
+    const c = gameState.cutscene;
+    const imgW = elkaImg.width  || 200;
+    const imgH = elkaImg.height || 300;
+    const aspect = imgW / imgH;
+
+    c.elkiSide.forEach(e => {
+        const baseH = H * e.size;
+        const baseW = baseH * aspect;
+        const centerX = e.centerX * W;
+        const centerY = e.centerY * H;
+        const x = centerX - baseW / 2;
+        const y = centerY - baseH / 2;
+
+        ctx.save();
+        ctx.filter = 'brightness(0.05)';
+        const off = 4;
+        const directions = [
+            [-off, 0], [off, 0], [0, -off], [0, off],
+            [-off, -off], [off, -off], [-off, off], [off, off]
+        ];
+        directions.forEach(([ox, oy]) => {
+            ctx.drawImage(elkaImg, x + ox, y + oy, baseW, baseH);
+        });
+        ctx.filter = 'brightness(0.2)';
+        ctx.drawImage(elkaImg, x, y, baseW, baseH);
+        ctx.filter = 'none';
+        ctx.restore();
+    });
+}
+
+function drawElka(e) {
+    const elkaImg = IMG[ELKA_SPRITE];
+    if (!elkaImg) return;
+
+    ctx.save();
+    ctx.filter = 'brightness(0.05)';
+    const off = 2;
+    const directions = [
+        [-off, 0], [off, 0], [0, -off], [0, off],
+        [-off, -off], [off, -off], [-off, off], [off, off]
+    ];
+    directions.forEach(([ox, oy]) => {
+        ctx.drawImage(elkaImg, e.x + ox, e.y + oy, e.w, e.h);
+    });
+    ctx.filter = 'brightness(0.2)';
+    ctx.drawImage(elkaImg, e.x, e.y, e.w, e.h);
+    ctx.filter = 'none';
+    ctx.restore();
+}
+
+function drawKoster() {
+    const k = gameState.forest.koster;
+    const path = KOSTER_SPRITES[k.frame];
+    const img = IMG[path];
+
+    if (!img) {
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(k.x, k.y, k.w, k.h);
+        return;
+    }
+
+    const sx = img.width  * k.cropLeft;
+    const sy = img.height * k.cropTop;
+    const sw = img.width  * (1 - k.cropLeft - k.cropRight);
+    const sh = img.height * (1 - k.cropTop - k.cropBottom);
+
+    ctx.drawImage(img, sx, sy, sw, sh, k.x, k.y, k.w, k.h);
+}
+
+function drawPlayer() {
+    const p = gameState.forest.player;
+    let path, flip = false;
+
+    if (p.dir === 'left' || p.dir === 'right') {
+        path = p.moving ? PLAYER_SPRITES.walkS[p.frame] : PLAYER_SPRITES.side[p.frame];
+        flip = (p.dir === 'left');
+    } else {
+        path = p.moving ? PLAYER_SPRITES.walkF[p.frame] : PLAYER_SPRITES.stand[p.frame];
+    }
+
+    const img = IMG[path];
+    if (!img) return;
+
+    ctx.save();
+    if (flip) {
+        ctx.translate(p.x + SPRITE_W, p.y);
+        ctx.scale(-1, 1);
+        ctx.drawImage(img, 0, 0, SPRITE_W, SPRITE_H);
+    } else {
+        ctx.drawImage(img, p.x, p.y, SPRITE_W, SPRITE_H);
+    }
+    ctx.restore();
+}
+
+function drawYkostra() {
+    const c = gameState.cutscene;
+    const path = YKOSTRA_SPRITES[c.frame];
+    const img = IMG[path];
+    if (!img) {
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(W / 2 - 50, H / 2 - 50, 100, 100);
+        return;
+    }
+
+    const x = W / 2 - c.ykostraW / 2;
+    const y = H / 2 - c.ykostraH / 2;
+
+    ctx.drawImage(img, x, y, c.ykostraW, c.ykostraH);
+}
+
+function gameLoop(ts) {
+    if (!gameState.lastTs) gameState.lastTs = ts;
+    let dt = ts - gameState.lastTs;
+    gameState.lastTs = ts;
+    if (dt > 100) dt = 100;
+
+    if (gameState.phase === 'forest' || gameState.phase === 'cutscene' || gameState.phase === 'eat' || gameState.phase === 'palki') {
+        updateForest(dt);
+        renderForest();
+    }
+
+    requestAnimationFrame(gameLoop);
+}
+
+resize();
+window.addEventListener('resize', resize);
+
+preloadImages(() => {
+    requestAnimationFrame(gameLoop);
+});
+
+/* ============================================================
+   АВТОСТАРТ МИНИ-ИГРЫ ПРИ ЗАХОДЕ
+   ============================================================ */
+window.addEventListener('load', () => {
+    startChapter2();
+});
 </script>
 </body>
 </html>
