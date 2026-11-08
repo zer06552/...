@@ -1243,12 +1243,12 @@ function startChapter1() {
 }
 
 /* ============================================================
-   МИНИ-ИГРА — ЛОГИКА
+   МИНИ-ИГРА — ЛОГИКА (облегчённая, ёлки как раньше)
    ============================================================ */
 const g2 = document.getElementById('g2');
 
 const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d', { alpha: false });
 ctx.imageSmoothingEnabled = false;
 
 let W = 0, H = 0;
@@ -1346,6 +1346,83 @@ function preloadImages(callback) {
         };
         img.src = path;
     });
+}
+
+/* ============================================================
+   КЭШ ЁЛОК — точно как раньше: рисуем в экранных пикселях,
+   контур ±off в экранных пикселях, потом просто drawImage.
+   Ключ = w x h x off x brightness (без округления размеров).
+   ============================================================ */
+const ELKA_CACHE = {};
+
+function getDarkElka(w, h, off, brightness) {
+    const key = w + 'x' + h + '_' + off + '_' + brightness;
+    if (ELKA_CACHE[key] !== undefined) return ELKA_CACHE[key];
+
+    const elkaImg = IMG[ELKA_SPRITE];
+    if (!elkaImg) return null;
+
+    // canvas чуть больше, чтобы контур не обрезался
+    const cw = Math.ceil(w) + off * 2 + 2;
+    const ch = Math.ceil(h) + off * 2 + 2;
+
+    const c = document.createElement('canvas');
+    c.width  = cw;
+    c.height = ch;
+    const cx = c.getContext('2d');
+    cx.imageSmoothingEnabled = false;
+
+    const padX = off + 1;
+    const padY = off + 1;
+
+    // контур — 8 смещений ±off в экранных пикселях
+    cx.filter = 'brightness(0.03)';
+    const dirs = [
+        [-off, 0], [off, 0], [0, -off], [0, off],
+        [-off, -off], [off, -off], [-off, off], [off, off]
+    ];
+    dirs.forEach(([ox, oy]) => {
+        cx.drawImage(elkaImg, padX + ox, padY + oy, w, h);
+    });
+
+    // сама ёлка
+    cx.filter = 'brightness(' + brightness + ')';
+    cx.drawImage(elkaImg, padX, padY, w, h);
+    cx.filter = 'none';
+
+    const entry = { canvas: c, offX: padX, offY: padY };
+    ELKA_CACHE[key] = entry;
+    return entry;
+}
+
+// Запечённая тёмная трава: два варианта
+let TRAVA_DARK_1 = null;
+let TRAVA_DARK_2 = null;
+let travaBaked = false;
+
+function bakeTrava() {
+    if (travaBaked) return;
+    travaBaked = true;
+
+    function bake(img) {
+        if (!img) return null;
+        const c = document.createElement('canvas');
+        c.width  = TRAVA_TILE_W;
+        c.height = TRAVA_TILE_H;
+        const cx = c.getContext('2d');
+        cx.imageSmoothingEnabled = false;
+        cx.filter = 'brightness(0.35)';
+        const sx = img.width  * TRAVA_CROP_L;
+        const sy = img.height * TRAVA_CROP_T;
+        const sw = img.width  * (1 - TRAVA_CROP_L - TRAVA_CROP_R);
+        const sh = img.height * (1 - TRAVA_CROP_T - TRAVA_CROP_B);
+        cx.drawImage(img, sx, sy, sw, sh, 0, 0, TRAVA_TILE_W, TRAVA_TILE_H);
+        cx.filter = 'none';
+        return c;
+    }
+
+    TRAVA_DARK_1 = bake(IMG[TRAVA_SPRITE]);
+    TRAVA_DARK_2 = bake(IMG[TRAVA2_SPRITE]);
 }
 
 const gameState = {
@@ -1459,8 +1536,8 @@ const ELKA_HIT_OFFSET_Y = 0.78;
 const ELKA_HIT_W_FACTOR = 0.50;
 const ELKA_HIT_H_FACTOR = 0.20;
 
-const TRAVA_TILE_W = 120;
-const TRAVA_TILE_H = 120;
+const TRAVA_TILE_W = 160;
+const TRAVA_TILE_H = 160;
 const TRAVA_CROP_L = 0.15;
 const TRAVA_CROP_R = 0.15;
 const TRAVA_CROP_T = 0.15;
@@ -1548,6 +1625,7 @@ function startChapter2() {
     g2.classList.add('on');
 
     startHum();
+    bakeTrava();
 
     try {
         const amb = document.getElementById('amb');
@@ -1973,8 +2051,7 @@ function showCmotrit2Dialog(text, onDone) {
 }
 
 /* ============================================================
-   ДИАЛОГ У КОСТРА — КАЖДАЯ РЕПЛИКА В ОТДЕЛЬНОМ ОКНЕ
-   Последняя реплика: «Ты будешь сейчас спорить?»
+   ДИАЛОГ У КОСТРА
    ============================================================ */
 function showYkostraPalkiDialog() {
     const lines = [
@@ -2162,7 +2239,7 @@ function drawEatElki() {
     elkiCanvas.width = W;
     elkiCanvas.height = H;
 
-    const c = elkiCanvas.getContext('2d');
+    const c = elkiCanvas.getContext('2d', { alpha: true });
     c.imageSmoothingEnabled = false;
     c.clearRect(0, 0, W, H);
 
@@ -2188,21 +2265,11 @@ function drawEatElki() {
         const x = centerX - baseW / 2;
         const y = centerY - baseH / 2;
 
-        c.save();
-        c.filter = 'brightness(0.03)';
-        const off = 4;
-        const directions = [
-            [-off, 0], [off, 0], [0, -off], [0, off],
-            [-off, -off], [off, -off], [-off, off], [off, off]
-        ];
-        directions.forEach(([ox, oy]) => {
-            c.drawImage(elkaImg, x + ox, y + oy, baseW, baseH);
-        });
+        // точно как раньше: контур ±4 экранных пикселя
+        const cache = getDarkElka(baseW, baseH, 4, 0.12);
+        if (!cache) return;
 
-        c.filter = 'brightness(0.12)';
-        c.drawImage(elkaImg, x, y, baseW, baseH);
-        c.filter = 'none';
-        c.restore();
+        c.drawImage(cache.canvas, x - cache.offX, y - cache.offY);
     });
 }
 
@@ -2344,7 +2411,7 @@ function initPalkiScene() {
     const canvasEl = document.getElementById('palkiCanvas');
     canvasEl.width = W;
     canvasEl.height = H;
-    const c = canvasEl.getContext('2d');
+    const c = canvasEl.getContext('2d', { alpha: false });
     c.imageSmoothingEnabled = false;
 
     p.player.x = W / 2 - p.player.w / 2;
@@ -2364,7 +2431,7 @@ function initPalkiScene() {
         }
     }
 
-    const elkaCount = Math.floor((W * H) / 60000);
+    const elkaCount = Math.floor((W * H) / 80000);
     for (let i = 0; i < elkaCount; i++) {
         const ex = Math.random() * (W + ELKA_W) - ELKA_W / 2;
         const ey = Math.random() * (H + ELKA_H) - ELKA_H / 2;
@@ -2516,22 +2583,13 @@ function renderPalkiScene() {
     c.fillStyle = '#101C12';
     c.fillRect(0, 0, W, H);
 
-    const trava1 = IMG[TRAVA_SPRITE];
-    const trava2 = IMG[TRAVA2_SPRITE];
-    if (trava1 || trava2) {
-        c.save();
-        c.filter = 'brightness(0.35)';
+    // Трава: запечённые тёмные текстуры, без filter
+    if (TRAVA_DARK_1 || TRAVA_DARK_2) {
         p.travaTiles.forEach(t => {
-            const travaImg = (t.type === 'trava2' && trava2) ? trava2 : (trava1 || trava2);
-            if (!travaImg) return;
-            const sx = travaImg.width  * TRAVA_CROP_L;
-            const sy = travaImg.height * TRAVA_CROP_T;
-            const sw = travaImg.width  * (1 - TRAVA_CROP_L - TRAVA_CROP_R);
-            const sh = travaImg.height * (1 - TRAVA_CROP_T - TRAVA_CROP_B);
-            c.drawImage(travaImg, sx, sy, sw, sh, t.x, t.y, TRAVA_TILE_W, TRAVA_TILE_H);
+            const img = (t.type === 'trava2' && TRAVA_DARK_2) ? TRAVA_DARK_2 : (TRAVA_DARK_1 || TRAVA_DARK_2);
+            if (!img) return;
+            c.drawImage(img, t.x, t.y, TRAVA_TILE_W, TRAVA_TILE_H);
         });
-        c.filter = 'none';
-        c.restore();
     }
 
     const palkaImg = IMG[PALKA_SPRITE];
@@ -2559,20 +2617,11 @@ function renderPalkiScene() {
     drawables.forEach(d => {
         if (d.type === 'elka') {
             const e = d.elka;
-            c.save();
-            c.filter = 'brightness(0.05)';
-            const off = 2;
-            const directions = [
-                [-off, 0], [off, 0], [0, -off], [0, off],
-                [-off, -off], [off, -off], [-off, off], [off, off]
-            ];
-            directions.forEach(([ox, oy]) => {
-                c.drawImage(elkaImg, e.x + ox, e.y + oy, ELKA_W, ELKA_H);
-            });
-            c.filter = 'brightness(0.2)';
-            c.drawImage(elkaImg, e.x, e.y, ELKA_W, ELKA_H);
-            c.filter = 'none';
-            c.restore();
+            // точно как раньше: ELKA_W x ELKA_H, контур ±2
+            const cache = getDarkElka(ELKA_W, ELKA_H, 2, 0.2);
+            if (cache) {
+                c.drawImage(cache.canvas, e.x - cache.offX, e.y - cache.offY);
+            }
         }
 
         if (d.type === 'player') {
@@ -2856,30 +2905,16 @@ function collidesWithAnyElka(x, y) {
 }
 
 function drawTrava(scale) {
-    const trava1 = IMG[TRAVA_SPRITE];
-    const trava2 = IMG[TRAVA2_SPRITE];
-    if (!trava1 && !trava2) return;
+    if (!TRAVA_DARK_1 && !TRAVA_DARK_2) return;
 
     const tw = TRAVA_TILE_W * (scale || 1);
     const th = TRAVA_TILE_H * (scale || 1);
 
-    ctx.save();
-    ctx.filter = 'brightness(0.35)';
-
     gameState.forest.travaTiles.forEach(t => {
-        const travaImg = (t.type === 'trava2' && trava2) ? trava2 : (trava1 || trava2);
-        if (!travaImg) return;
-
-        const sx = travaImg.width  * TRAVA_CROP_L;
-        const sy = travaImg.height * TRAVA_CROP_T;
-        const sw = travaImg.width  * (1 - TRAVA_CROP_L - TRAVA_CROP_R);
-        const sh = travaImg.height * (1 - TRAVA_CROP_T - TRAVA_CROP_B);
-
-        ctx.drawImage(travaImg, sx, sy, sw, sh, t.x * (scale || 1), t.y * (scale || 1), tw, th);
+        const img = (t.type === 'trava2' && TRAVA_DARK_2) ? TRAVA_DARK_2 : (TRAVA_DARK_1 || TRAVA_DARK_2);
+        if (!img) return;
+        ctx.drawImage(img, t.x * (scale || 1), t.y * (scale || 1), tw, th);
     });
-
-    ctx.filter = 'none';
-    ctx.restore();
 }
 
 function renderForest() {
@@ -2939,41 +2974,20 @@ function drawCutsceneElki() {
         const x = centerX - baseW / 2;
         const y = centerY - baseH / 2;
 
-        ctx.save();
-        ctx.filter = 'brightness(0.05)';
-        const off = 4;
-        const directions = [
-            [-off, 0], [off, 0], [0, -off], [0, off],
-            [-off, -off], [off, -off], [-off, off], [off, off]
-        ];
-        directions.forEach(([ox, oy]) => {
-            ctx.drawImage(elkaImg, x + ox, y + oy, baseW, baseH);
-        });
-        ctx.filter = 'brightness(0.2)';
-        ctx.drawImage(elkaImg, x, y, baseW, baseH);
-        ctx.filter = 'none';
-        ctx.restore();
+        // точно как раньше: контур ±4 экранных пикселя
+        const cache = getDarkElka(baseW, baseH, 4, 0.2);
+        if (!cache) return;
+
+        ctx.drawImage(cache.canvas, x - cache.offX, y - cache.offY);
     });
 }
 
 function drawElka(e) {
-    const elkaImg = IMG[ELKA_SPRITE];
-    if (!elkaImg) return;
+    // точно как раньше: ELKA_W x ELKA_H, контур ±2
+    const cache = getDarkElka(ELKA_W, ELKA_H, 2, 0.2);
+    if (!cache) return;
 
-    ctx.save();
-    ctx.filter = 'brightness(0.05)';
-    const off = 2;
-    const directions = [
-        [-off, 0], [off, 0], [0, -off], [0, off],
-        [-off, -off], [off, -off], [-off, off], [off, off]
-    ];
-    directions.forEach(([ox, oy]) => {
-        ctx.drawImage(elkaImg, e.x + ox, e.y + oy, e.w, e.h);
-    });
-    ctx.filter = 'brightness(0.2)';
-    ctx.drawImage(elkaImg, e.x, e.y, e.w, e.h);
-    ctx.filter = 'none';
-    ctx.restore();
+    ctx.drawImage(cache.canvas, e.x - cache.offX, e.y - cache.offY);
 }
 
 function drawKoster() {
@@ -3040,7 +3054,7 @@ function gameLoop(ts) {
     if (!gameState.lastTs) gameState.lastTs = ts;
     let dt = ts - gameState.lastTs;
     gameState.lastTs = ts;
-    if (dt > 100) dt = 100;
+    if (dt > 50) dt = 50;
 
     if (gameState.phase === 'forest' || gameState.phase === 'cutscene' || gameState.phase === 'eat' || gameState.phase === 'palki') {
         updateForest(dt);
