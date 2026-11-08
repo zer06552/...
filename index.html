@@ -1,4 +1,4 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
@@ -1243,7 +1243,7 @@ function startChapter1() {
 }
 
 /* ============================================================
-   МИНИ-ИГРА — ЛОГИКА (облегчённая, ёлки как раньше)
+   МИНИ-ИГРА — ЛОГИКА
    ============================================================ */
 const g2 = document.getElementById('g2');
 
@@ -1349,7 +1349,7 @@ function preloadImages(callback) {
 }
 
 /* ============================================================
-   КЭШ ЁЛОК — точно как раньше: контур в экранных пикселях
+   КЭШ ЁЛОК
    ============================================================ */
 const ELKA_CACHE = {};
 
@@ -1430,7 +1430,7 @@ gameState.forest = {
         dir: 'front',
         moving: false,
         frame: 0, frameAccum: 0,
-        speed: 6,                 // ← скорость снижена с 10 до 6
+        speed: 4,          // ← скорость снижена с 10 до 4
         w: 160, h: 160
     },
     koster: {
@@ -1464,7 +1464,7 @@ gameState.palki = {
     palki: [],
     collected: 0,
     total: 5,
-    player: { x: 0, y: 0, dir: 'front', moving: false, frame: 0, frameAccum: 0, speed: 6, w: 160, h: 160 },
+    player: { x: 0, y: 0, dir: 'front', moving: false, frame: 0, frameAccum: 0, speed: 4, w: 160, h: 160 }, // ← тоже 4
     elki: [],
     travaTiles: []
 };
@@ -1538,6 +1538,9 @@ const TRAVA_CROP_T = 0.15;
 const TRAVA_CROP_B = 0.15;
 const TRAVA_CUTSCENE_SCALE = 3.6;
 
+/* ============================================================
+   ВОЗВРАТ В ЛОББИ
+   ============================================================ */
 function returnToLobby() {
     g2.classList.remove('on');
 
@@ -1609,6 +1612,9 @@ function returnToLobby() {
     lobby.classList.add('on');
 }
 
+/* ============================================================
+   СТАРТ МИНИ-ИГРЫ
+   ============================================================ */
 function startChapter2() {
     g2.classList.add('on');
 
@@ -2038,6 +2044,9 @@ function showCmotrit2Dialog(text, onDone) {
     }, 100);
 }
 
+/* ============================================================
+   ДИАЛОГ У КОСТРА
+   ============================================================ */
 function showYkostraPalkiDialog() {
     const lines = [
         'Будь добр, сходи за палками.',
@@ -3051,6 +3060,9 @@ preloadImages(() => {
     requestAnimationFrame(gameLoop);
 });
 
+/* ============================================================
+   АВТОСТАРТ МИНИ-ИГРЫ ПРИ ЗАХОДЕ
+   ============================================================ */
 window.addEventListener('load', () => {
     startChapter2();
 });
