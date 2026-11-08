@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
@@ -1349,9 +1349,7 @@ function preloadImages(callback) {
 }
 
 /* ============================================================
-   КЭШ ЁЛОК — точно как раньше: рисуем в экранных пикселях,
-   контур ±off в экранных пикселях, потом просто drawImage.
-   Ключ = w x h x off x brightness (без округления размеров).
+   КЭШ ЁЛОК — точно как раньше: контур в экранных пикселях
    ============================================================ */
 const ELKA_CACHE = {};
 
@@ -1362,7 +1360,6 @@ function getDarkElka(w, h, off, brightness) {
     const elkaImg = IMG[ELKA_SPRITE];
     if (!elkaImg) return null;
 
-    // canvas чуть больше, чтобы контур не обрезался
     const cw = Math.ceil(w) + off * 2 + 2;
     const ch = Math.ceil(h) + off * 2 + 2;
 
@@ -1375,7 +1372,6 @@ function getDarkElka(w, h, off, brightness) {
     const padX = off + 1;
     const padY = off + 1;
 
-    // контур — 8 смещений ±off в экранных пикселях
     cx.filter = 'brightness(0.03)';
     const dirs = [
         [-off, 0], [off, 0], [0, -off], [0, off],
@@ -1385,7 +1381,6 @@ function getDarkElka(w, h, off, brightness) {
         cx.drawImage(elkaImg, padX + ox, padY + oy, w, h);
     });
 
-    // сама ёлка
     cx.filter = 'brightness(' + brightness + ')';
     cx.drawImage(elkaImg, padX, padY, w, h);
     cx.filter = 'none';
@@ -1395,7 +1390,6 @@ function getDarkElka(w, h, off, brightness) {
     return entry;
 }
 
-// Запечённая тёмная трава: два варианта
 let TRAVA_DARK_1 = null;
 let TRAVA_DARK_2 = null;
 let travaBaked = false;
@@ -1436,7 +1430,7 @@ gameState.forest = {
         dir: 'front',
         moving: false,
         frame: 0, frameAccum: 0,
-        speed: 10,
+        speed: 6,                 // ← скорость снижена с 10 до 6
         w: 160, h: 160
     },
     koster: {
@@ -1470,7 +1464,7 @@ gameState.palki = {
     palki: [],
     collected: 0,
     total: 5,
-    player: { x: 0, y: 0, dir: 'front', moving: false, frame: 0, frameAccum: 0, speed: 10, w: 160, h: 160 },
+    player: { x: 0, y: 0, dir: 'front', moving: false, frame: 0, frameAccum: 0, speed: 6, w: 160, h: 160 },
     elki: [],
     travaTiles: []
 };
@@ -1544,9 +1538,6 @@ const TRAVA_CROP_T = 0.15;
 const TRAVA_CROP_B = 0.15;
 const TRAVA_CUTSCENE_SCALE = 3.6;
 
-/* ============================================================
-   ВОЗВРАТ В ЛОББИ
-   ============================================================ */
 function returnToLobby() {
     g2.classList.remove('on');
 
@@ -1618,9 +1609,6 @@ function returnToLobby() {
     lobby.classList.add('on');
 }
 
-/* ============================================================
-   СТАРТ МИНИ-ИГРЫ
-   ============================================================ */
 function startChapter2() {
     g2.classList.add('on');
 
@@ -2050,9 +2038,6 @@ function showCmotrit2Dialog(text, onDone) {
     }, 100);
 }
 
-/* ============================================================
-   ДИАЛОГ У КОСТРА
-   ============================================================ */
 function showYkostraPalkiDialog() {
     const lines = [
         'Будь добр, сходи за палками.',
@@ -2265,7 +2250,6 @@ function drawEatElki() {
         const x = centerX - baseW / 2;
         const y = centerY - baseH / 2;
 
-        // точно как раньше: контур ±4 экранных пикселя
         const cache = getDarkElka(baseW, baseH, 4, 0.12);
         if (!cache) return;
 
@@ -2583,7 +2567,6 @@ function renderPalkiScene() {
     c.fillStyle = '#101C12';
     c.fillRect(0, 0, W, H);
 
-    // Трава: запечённые тёмные текстуры, без filter
     if (TRAVA_DARK_1 || TRAVA_DARK_2) {
         p.travaTiles.forEach(t => {
             const img = (t.type === 'trava2' && TRAVA_DARK_2) ? TRAVA_DARK_2 : (TRAVA_DARK_1 || TRAVA_DARK_2);
@@ -2617,7 +2600,6 @@ function renderPalkiScene() {
     drawables.forEach(d => {
         if (d.type === 'elka') {
             const e = d.elka;
-            // точно как раньше: ELKA_W x ELKA_H, контур ±2
             const cache = getDarkElka(ELKA_W, ELKA_H, 2, 0.2);
             if (cache) {
                 c.drawImage(cache.canvas, e.x - cache.offX, e.y - cache.offY);
@@ -2974,7 +2956,6 @@ function drawCutsceneElki() {
         const x = centerX - baseW / 2;
         const y = centerY - baseH / 2;
 
-        // точно как раньше: контур ±4 экранных пикселя
         const cache = getDarkElka(baseW, baseH, 4, 0.2);
         if (!cache) return;
 
@@ -2983,7 +2964,6 @@ function drawCutsceneElki() {
 }
 
 function drawElka(e) {
-    // точно как раньше: ELKA_W x ELKA_H, контур ±2
     const cache = getDarkElka(ELKA_W, ELKA_H, 2, 0.2);
     if (!cache) return;
 
@@ -3071,9 +3051,6 @@ preloadImages(() => {
     requestAnimationFrame(gameLoop);
 });
 
-/* ============================================================
-   АВТОСТАРТ МИНИ-ИГРЫ ПРИ ЗАХОДЕ
-   ============================================================ */
 window.addEventListener('load', () => {
     startChapter2();
 });
